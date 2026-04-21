@@ -1,0 +1,33 @@
+# Car Service and Maintenance Tracker
+# =====================================
+# IntelliJ IDEA project – .gitignore
+
+# ── IntelliJ IDEA ─────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ── Maven ─────────────────────────────────────────────────
+target/
+*.class
+
+# ── OS files ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Compiled output ───────────────────────────────────────
+*.jar
+*.war
+*.ear
+*.log
+
+# ── Environment / secrets ─────────────────────────────────
+.env
+*.properties.local
+secrets.txt
+
+# ── Keep data files tracked (they are seed data) ──────────
+!src/main/resources/data/*.txt

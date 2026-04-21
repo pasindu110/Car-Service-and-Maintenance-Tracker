@@ -1,0 +1,8 @@
+# Car Service and Maintenance Tracker – Invoices Data
+# ====================================================
+# Format: id|serviceRecordId|customerId|invoiceDate|subTotal|taxRate|totalAmount|paid|paymentId|createdAt
+#
+# Example:
+# INV-1000|SVC-1000|USR-1001|2026-04-17|11363.64|0.10|12500.00|true|PAY-1000|2026-04-17T15:30
+#
+# TODO: Add invoice test data below.

@@ -1,0 +1,8 @@
+# Car Service and Maintenance Tracker – Service Records Data
+# ===========================================================
+# Format: id|vehicleId|mechanicId|serviceDate|description|status|taskIds|totalCost|createdAt
+#
+# Example:
+# SVC-1000|VEH-1000|USR-1002|2026-04-17|Full service|COMPLETED|TSK-1000,TSK-1001|12500.00|2026-04-17T09:00
+#
+# TODO: Add service record test data below.

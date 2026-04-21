@@ -1,0 +1,8 @@
+# Car Service and Maintenance Tracker – Appointments Data
+# ========================================================
+# Format: id|customerId|vehicleId|mechanicId|scheduledAt|serviceType|notes|status|serviceRecordId|createdAt
+#
+# Example:
+# APT-1000|USR-1001|VEH-1000|USR-1002|2026-04-20T09:00|Oil Change|No extra notes|CONFIRMED||2026-04-17T08:00
+#
+# TODO: Add appointment test data below.

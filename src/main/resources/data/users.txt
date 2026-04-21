@@ -1,0 +1,10 @@
+# Car Service and Maintenance Tracker – Seed Data
+# ================================================
+# Format: id|username|email|fullName|phone|role|active|createdAt|<role-specific-fields>
+#
+# Lines starting with # are comments and are ignored by FileUtil.
+#
+# Example Admin record:
+# USR-1000|admin|admin@cartracker.com|System Admin|0712345678|ADMIN|true|2026-04-17T10:00|SUPER_ADMIN
+#
+# TODO: Add your test user records below this line.
