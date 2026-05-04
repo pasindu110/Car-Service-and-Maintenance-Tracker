@@ -48,13 +48,14 @@ public class MainApplication {
 
             System.out.println("[System] All Database Repositories initialized successfully.");
 
-            // TODO: Initialize Services by passing these repositories
-            // e.g. UserService userService = new UserServiceImpl(userRepository);
+            // 3. Initialize Services
+            com.cartracker.service.user.UserService userService = new com.cartracker.service.user.UserServiceImpl(userRepository);
 
-            // TODO: Initialize Controllers by passing the services
-            // e.g. UserController userController = new UserController(userService);
+            // 4. Start Web Server
+            WebServer webServer = new WebServer(userService);
+            webServer.start();
 
-            System.out.println("\n[System] Application is ready! (Menu loop coming soon...)");
+            System.out.println("\n[System] Application is ready! Open http://localhost:8080 in your browser.");
 
         } catch (Exception e) {
             System.err.println("[System] Failed to start application: " + e.getMessage());

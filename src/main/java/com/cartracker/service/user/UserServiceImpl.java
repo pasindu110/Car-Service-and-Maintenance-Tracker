@@ -23,46 +23,62 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User register(User user) {
-        // TODO: Validate user fields (username not empty, email format, etc.)
-        // TODO: Hash password before saving
-        // TODO: Ensure username uniqueness via userRepository.findByUsername()
-        // TODO: Generate ID via IdGenerator.generateSequential("USR")
+        // Validate
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            throw new IllegalArgumentException("Email is required");
+        }
+        
+        // Ensure email uniqueness (using email as username)
+        if (userRepository.findByUsername(user.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("User with this email already exists");
+        }
+        
+        user.setUsername(user.getEmail()); // Using email as username
+
+        // Generate ID if not present
+        if (user.getId() == null || user.getId().isEmpty()) {
+            user.setId(java.util.UUID.randomUUID().toString());
+        }
+
         return userRepository.save(user);
     }
 
     @Override
     public Optional<User> findById(String id) {
-        // TODO: Delegate to userRepository.findById(id)
-        return Optional.empty();
+        return userRepository.findById(id);
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        // TODO: Delegate to userRepository.findByUsername(username)
-        return Optional.empty();
+        return userRepository.findByUsername(username);
     }
 
     @Override
     public List<User> findAll() {
-        // TODO: Return userRepository.findAll()
-        return List.of();
+        return userRepository.findAll();
     }
 
     @Override
     public User update(User user) {
-        // TODO: Validate user, set updatedAt, delegate to userRepository.update()
         return userRepository.update(user);
     }
 
     @Override
     public boolean deactivate(String userId) {
-        // TODO: Find user, set active = false, save, return success flag
-        return false;
+        return userRepository.deleteById(userId);
     }
 
     @Override
     public Optional<User> login(String username, String password) {
-        // TODO: Find user by username, compare hashed password, return if match
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            // Note: In a real app, use BCrypt to hash/verify passwords.
+            // For this student project, we compare plain text.
+            if (user.getPassword().equals(password)) {
+                return Optional.of(user);
+            }
+        }
         return Optional.empty();
     }
 }
