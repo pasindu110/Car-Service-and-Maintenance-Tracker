@@ -128,7 +128,7 @@ footer{background:#2c1a0e;color:#fff;padding:60px;}
     <li><a href="#">Appointments</a></li>
     <li><a href="#">Reports</a></li>
   </ul>
-  <div class="nav-right">
+  <div class="nav-right" id="navRight">
     <a class="btn-login" href="login.html">Log in</a>
     <button class="btn-book">Book Service</button>
   </div>
@@ -383,6 +383,21 @@ window.addEventListener('scroll',()=>{
   document.querySelector('nav').style.boxShadow=
     window.scrollY>10?'0 2px 20px rgba(0,0,0,.08)':'none';
 });
+
+// User Login State Check
+const navRight = document.getElementById('navRight');
+if (localStorage.getItem('userLoggedIn') === 'true') {
+    const userName = localStorage.getItem('userName') || 'User';
+    const initial = userName.charAt(0).toUpperCase();
+    navRight.innerHTML = `
+        <a href="profile.html" style="font-size:13px; font-weight:600; color:#1a1a1a; text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <div style="width:32px; height:32px; background:#c9a84c; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px;">
+                ${initial}
+            </div>
+            ${userName}
+        </a>
+    `;
+}
 </script>
 </body>
 </html>
