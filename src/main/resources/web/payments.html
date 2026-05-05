@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Payments – CarTracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;color:#1a1a1a;background:linear-gradient(160deg,#f8f8f6 0%,#eef0eb 50%,#e8ebe4 100%);min-height:100vh;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 60px;background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);border-bottom:1px solid #f0f0f0;}
+.nav-logo{font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+.nav-logo a{color:inherit;text-decoration:none;}
+.nav-links{display:flex;gap:32px;list-style:none;align-items:center;}
+.nav-links a{font-size:13px;color:#444;text-decoration:none;transition:color .2s;}
+.nav-links a:hover,.nav-links a.active{color:#1a1a1a;font-weight:600;}
+.nav-right{display:flex;align-items:center;gap:16px;}
+
+.payment-main{padding-top:96px;padding-bottom:80px;padding-left:60px;padding-right:60px;max-width:1200px;margin:0 auto;}
+.payment-head{margin-bottom:40px;}
+.payment-head h1{font-size:32px;font-weight:700;margin-bottom:8px;letter-spacing:-0.02em;}
+.payment-head p{font-size:14px;color:#666;max-width:480px;line-height:1.6;}
+
+.layout{display:grid;grid-template-columns:1fr 400px;gap:48px;align-items:start;}
+@media (max-width:960px){.layout{grid-template-columns:1fr;}.payment-card-wrap{order:-1;}nav{padding:18px 24px;}.payment-main{padding-left:24px;padding-right:24px;}}
+
+/* ── Form ── */
+.pay-form{background:#fff;border-radius:16px;padding:36px;box-shadow:0 4px 40px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.04);}
+.pay-form-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px;}
+.pay-form-head h2{font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#888;margin:0;}
+.pay-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-edit,.btn-delete{font-size:13px;font-weight:600;padding:10px 18px;border-radius:10px;cursor:pointer;font-family:inherit;transition:background .2s,border-color .2s,color .2s,transform .15s;}
+.btn-edit{background:#fff;color:#1a1a1a;border:1px solid #e0e0e0;}
+.btn-edit:hover{border-color:#c9a84c;color:#2c1a0e;background:#fffef8;}
+.btn-edit:focus-visible{outline:2px solid #c9a84c;outline-offset:2px;}
+.btn-delete{background:#fff;color:#b42318;border:1px solid #f0c4c1;}
+.btn-delete:hover{background:#fef6f6;border-color:#e85d5d;color:#8b1a12;}
+.btn-delete:focus-visible{outline:2px solid #e03131;outline-offset:2px;}
+.field{margin-bottom:20px;}
+.field label{display:block;font-size:11px;color:#888;margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase;font-weight:500;}
+.field input,.field select{width:100%;border:1px solid #e8e8e8;padding:14px 16px;font-size:15px;font-family:inherit;border-radius:10px;outline:none;transition:border-color .2s, box-shadow .2s;background:#fafafa;}
+.field input:focus,.field select:focus{border-color:#c9a84c;background:#fff;box-shadow:0 0 0 3px rgba(201,168,76,.15);}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media (max-width:520px){.row-2{grid-template-columns:1fr;}}
+.btn-pay{width:100%;margin-top:8px;background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);color:#fff;font-size:14px;font-weight:600;padding:16px;border:none;border-radius:12px;cursor:pointer;letter-spacing:.02em;transition:transform .15s, box-shadow .2s;}
+.btn-pay:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(0,0,0,.18);}
+.btn-pay:active{transform:translateY(0);}
+
+/* ── Card preview ── */
+.payment-card-wrap{position:sticky;top:112px;perspective:1200px;}
+.card-3d{width:100%;max-width:400px;margin:0 auto;height:252px;position:relative;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.4,.2,.2,1);}
+.card-3d.flipped{transform:rotateY(180deg);}
+.card-face{position:absolute;inset:0;border-radius:20px;overflow:hidden;box-shadow:0 24px 48px rgba(44,26,14,.25),0 0 0 1px rgba(255,255,255,.1) inset;-webkit-backface-visibility:hidden;backface-visibility:hidden;}
+.card-front{background:linear-gradient(135deg,#2c1a0e 0%,#4a2c18 40%,#1a120a 100%);}
+.card-back{background:linear-gradient(225deg,#1a120a 0%,#3d2818 50%,#2c1a0e 100%);transform:rotateY(180deg);}
+.card-shine{position:absolute;inset:-50%;background:linear-gradient(125deg,transparent 40%,rgba(255,255,255,.08) 50%,transparent 60%);pointer-events:none;}
+.card-chip{position:absolute;top:28px;left:28px;width:48px;height:36px;background:linear-gradient(135deg,#d4af37,#f5e6a8 45%,#c9a84c);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.card-contactless{position:absolute;top:32px;right:84px;width:36px;height:36px;border:2px solid rgba(255,255,255,.35);border-radius:50%;opacity:.85;}
+.card-brand{position:absolute;top:28px;right:28px;font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.9);text-transform:uppercase;}
+.card-number-display{position:absolute;left:28px;right:28px;top:104px;font-size:22px;font-weight:500;letter-spacing:.18em;color:#fff;font-variant-numeric:tabular-nums;text-shadow:0 1px 2px rgba(0,0,0,.25);}
+@media (max-width:400px){.card-number-display{font-size:18px;letter-spacing:.12em;}}
+.card-bottom{position:absolute;left:28px;right:28px;bottom:28px;display:flex;justify-content:space-between;align-items:flex-end;}
+.card-name-display{font-size:13px;font-weight:500;color:rgba(255,255,255,.85);letter-spacing:.1em;text-transform:uppercase;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.card-exp-display{font-size:13px;font-weight:600;color:#fff;letter-spacing:.15em;font-variant-numeric:tabular-nums;}
+.card-strip{position:absolute;top:52px;left:0;right:0;height:48px;background:#1a1a1a;}
+.card-cvv-zone{position:absolute;top:118px;right:28px;background:#fff;height:42px;width:220px;border-radius:8px;display:flex;align-items:center;justify-content:flex-end;padding:0 16px;}
+.card-cvv-label{font-size:10px;color:#888;margin-right:auto;letter-spacing:.1em;text-transform:uppercase;}
+.card-cvv-dots{font-size:16px;font-weight:700;color:#1a1a1a;letter-spacing:.28em;font-variant-numeric:tabular-nums;}
+.card-mini-hint{font-size:11px;color:rgba(255,255,255,.45);position:absolute;bottom:24px;left:28px;right:28px;text-align:center;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><a href="index.html">CarTracker</a></div>
+  <ul class="nav-links">
+    <li><a href="index.html#">Services</a></li>
+    <li><a href="index.html#">Fleet</a></li>
+    <li><a href="index.html#">Appointments</a></li>
+    <li><a href="index.html#">Reports</a></li>
+    <li><a class="active" href="payments.html">Payments</a></li>
+  </ul>
+  <div class="nav-right"></div>
+</nav>
+
+<main class="payment-main">
+  <header class="payment-head">
+    <h1>Add payment method</h1>
+    <p>Enter your card details below.</p>
+  </header>
+
+  <div class="layout">
+    <form class="pay-form" id="payForm" onsubmit="event.preventDefault();">
+      <div class="pay-form-head">
+        <h2>Billing card</h2>
+        <div class="pay-actions">
+          <button type="button" class="btn-edit" id="btnEditDetails" aria-label="Edit card details">Edit details</button>
+          <button type="button" class="btn-delete" id="btnDeleteDetails" aria-label="Delete card details">Delete</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="cardName">Cardholder name</label>
+        <input type="text" id="cardName" name="cardName" placeholder="As shown on card" autocomplete="cc-name"/>
+      </div>
+
+      <div class="field">
+        <label for="cardNumber">Card number</label>
+        <input type="text" id="cardNumber" name="cardNumber" placeholder="4242 4242 4242 4242" inputmode="numeric" autocomplete="cc-number" maxlength="19"/>
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label for="expiry">Expiry</label>
+          <input type="text" id="expiry" name="expiry" placeholder="MM / YY" inputmode="numeric" autocomplete="cc-exp" maxlength="7"/>
+        </div>
+        <div class="field">
+          <label for="cvv">CVV</label>
+          <input type="password" id="cvv" name="cvv" placeholder="•••" inputmode="numeric" autocomplete="cc-csc" maxlength="4"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="country">Country</label>
+        <select id="country" name="country">
+          <option value="">Select country</option>
+          <option value="LK" selected>Sri Lanka</option>
+          <option value="US">United States</option>
+          <option value="GB">United Kingdom</option>
+          <option value="AU">Australia</option>
+        </select>
+      </div>
+
+      <button type="button" class="btn-pay">Save card</button>
+    </form>
+
+    <aside class="payment-card-wrap" aria-label="Card preview">
+      <div class="card-3d" id="card3d">
+        <div class="card-face card-front">
+          <div class="card-shine"></div>
+          <div class="card-chip"></div>
+          <div class="card-contactless" aria-hidden="true"></div>
+          <span class="card-brand" id="cardBrand">CARD</span>
+          <div class="card-number-display" id="previewNumber">•••• •••• •••• ••••</div>
+          <div class="card-bottom">
+            <span class="card-name-display" id="previewName">YOUR NAME</span>
+            <span class="card-exp-display" id="previewExpiry">MM/YY</span>
+          </div>
+        </div>
+        <div class="card-face card-back">
+          <div class="card-strip"></div>
+          <div class="card-cvv-zone">
+            <span class="card-cvv-label">CVV</span>
+            <span class="card-cvv-dots" id="previewCvv">···</span>
+          </div>
+          <p class="card-mini-hint">Flip back when typing CVV</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<script>
+(function(){
+  var card3d=document.getElementById('card3d');
+  var numIn=document.getElementById('cardNumber');
+  var nameIn=document.getElementById('cardName');
+  var expIn=document.getElementById('expiry');
+  var cvvIn=document.getElementById('cvv');
+  var elNum=document.getElementById('previewNumber');
+  var elName=document.getElementById('previewName');
+  var elExp=document.getElementById('previewExpiry');
+  var elCvv=document.getElementById('previewCvv');
+  var elBrand=document.getElementById('cardBrand');
+  var countrySel=document.getElementById('country');
+  var btnEdit=document.getElementById('btnEditDetails');
+  var btnDelete=document.getElementById('btnDeleteDetails');
+  var payForm=document.getElementById('payForm');
+
+  function digitsOnly(s){return s.replace(/\D/g,'');}
+
+  function resetCardPreview(){
+    elNum.textContent='•••• •••• •••• ••••';
+    elName.textContent='YOUR NAME';
+    elExp.textContent='MM/YY';
+    elCvv.textContent='···';
+    elBrand.textContent='CARD';
+    card3d.classList.remove('flipped');
+  }
+
+  function clearAllFields(){
+    nameIn.value='';
+    numIn.value='';
+    expIn.value='';
+    cvvIn.value='';
+    if(countrySel){countrySel.value='LK';}
+    resetCardPreview();
+  }
+
+  function formatCardNumber(raw){
+    var d=digitsOnly(raw).slice(0,19);
+    var parts=[];
+    for(var i=0;i<d.length;i+=4)parts.push(d.slice(i,i+4));
+    return parts.join(' ');
+  }
+
+  function detectBrand(num){
+    var d=digitsOnly(num);
+    if(/^4/.test(d))return'VISA';
+    if(/^5[1-5]/.test(d))return'MC';
+    if(/^3[47]/.test(d))return'AMEX';
+    if(/^6(?:011|5)/.test(d))return'DISC';
+    return'CARD';
+  }
+
+  function displayNumber(formatted){
+    var d=digitsOnly(formatted);
+    var groups=[];
+    for(var g=0;g<4;g++){
+      var start=g*4;
+      var chunk=d.slice(start,start+4);
+      if(chunk.length===0){groups.push('••••');continue;}
+      var line='';
+      for(var i=0;i<4;i++)line+=i<chunk.length?chunk[i]:'•';
+      groups.push(line);
+    }
+    return groups.join(' ');
+  }
+
+  numIn.addEventListener('input',function(){
+    var f=formatCardNumber(numIn.value);
+    numIn.value=f;
+    elNum.textContent=displayNumber(f)||'•••• •••• •••• ••••';
+    elBrand.textContent=detectBrand(f);
+  });
+
+  nameIn.addEventListener('input',function(){
+    var v=nameIn.value.trim().toUpperCase()||'YOUR NAME';
+    elName.textContent=v.slice(0,22)||'YOUR NAME';
+  });
+
+  function formatExpiry(raw){
+    var d=digitsOnly(raw).slice(0,4);
+    if(d.length<=2)return d;
+    return d.slice(0,2)+' / '+d.slice(2);
+  }
+
+  expIn.addEventListener('input',function(){
+    expIn.value=formatExpiry(expIn.value);
+    var d=digitsOnly(expIn.value);
+    if(d.length>=2)elExp.textContent=d.slice(0,2)+'/'+d.slice(2,4);
+    else elExp.textContent='MM/YY';
+  });
+
+  function cvvDisplay(len){
+    if(!len)return'···';
+    return'•'.repeat(Math.min(len,4));
+  }
+
+  cvvIn.addEventListener('input',function(){
+    cvvIn.value=digitsOnly(cvvIn.value).slice(0,4);
+    elCvv.textContent=cvvDisplay(cvvIn.value.length);
+  });
+
+  cvvIn.addEventListener('focus',function(){card3d.classList.add('flipped');});
+  cvvIn.addEventListener('blur',function(){card3d.classList.remove('flipped');});
+
+  // Optional: flip on focus of expiry too could stay front — keep front for number/name/exp
+  numIn.addEventListener('focus',function(){card3d.classList.remove('flipped');});
+  nameIn.addEventListener('focus',function(){card3d.classList.remove('flipped');});
+  expIn.addEventListener('focus',function(){card3d.classList.remove('flipped');});
+
+  btnEdit.addEventListener('click',function(){
+    [nameIn,numIn,expIn,cvvIn,countrySel].forEach(function(el){
+      if(!el)return;
+      el.removeAttribute('readonly');
+      el.removeAttribute('disabled');
+    });
+    payForm.scrollIntoView({behavior:'smooth',block:'nearest'});
+    nameIn.focus({preventScroll:true});
+  });
+
+  btnDelete.addEventListener('click',function(){
+    if(!window.confirm('Clear all card details from this form?'))return;
+    clearAllFields();
+    nameIn.focus();
+  });
+})();
+</script>
+</body>
+</html>
