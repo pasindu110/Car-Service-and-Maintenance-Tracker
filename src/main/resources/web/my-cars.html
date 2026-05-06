@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cars – CarTracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b63f6; /* Blue */
+            --primary-hover: #2a4ac8;
+            --dark: #1b1c21;
+            --bg: #f5f6f8;
+            --white: #ffffff;
+            --text-dark: #1f2126;
+            --text-gray: #7a808a;
+            --border: #e6e8ec;
+            --red: #ef4444;
+            --purple: #8b5cf6;
+            --green: #10b981;
+            --orange: #f97316;
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-dark);
+            padding-top: 80px; /* offset for fixed nav */
+        }
+
+        /* ── SHARED NAV (from index.html) ── */
+        nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 60px;background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1px solid #f0f0f0;}
+        .nav-logo{font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;color:#1a1a1a;}
+        .nav-links{display:flex;gap:32px;list-style:none;}
+        .nav-links a{font-size:13px;color:#444;text-decoration:none;transition:color .2s;}
+        .nav-links a:hover{color:#1a1a1a;}
+        .nav-links a.active{color:#1a1a1a;font-weight:600;border-bottom:2px solid #c9a84c;padding-bottom:2px;}
+        .nav-right-area{display:flex;align-items:center;gap:16px;}
+        .btn-login{font-size:13px;color:#444;text-decoration:none;}
+        .btn-book{background:#1a1a1a;color:#fff;font-size:13px;padding:10px 22px;border:none;cursor:pointer;letter-spacing:.5px;}
+        nav .nav-shadow{box-shadow:0 2px 20px rgba(0,0,0,.08);}
+
+        /* ── SHARED FOOTER (from index.html) ── */
+        .site-footer{background:#2c1a0e;color:#fff;padding:60px;margin-top:60px;}
+        .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px;}
+        .footer-logo{font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+        .footer-tagline{font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:20px;}
+        .footer-col h4{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:16px;}
+        .footer-col ul{list-style:none;}
+        .footer-col ul li{margin-bottom:10px;}
+        .footer-col ul li a{font-size:13px;color:rgba(255,255,255,.7);text-decoration:none;transition:color .2s;}
+        .footer-col ul li a:hover{color:#c9a84c;}
+        .newsletter{display:flex;margin-top:12px;}
+        .newsletter input{flex:1;padding:10px 14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;outline:none;}
+        .newsletter input::placeholder{color:rgba(255,255,255,.4);}
+        .newsletter button{background:#c9a84c;border:none;padding:10px 16px;cursor:pointer;color:#fff;}
+        .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);}
+        .footer-bottom p{font-size:12px;color:rgba(255,255,255,.4);}
+        .footer-links{display:flex;gap:20px;}
+        .footer-links a{font-size:12px;color:rgba(255,255,255,.4);text-decoration:none;}
+        .socials{display:flex;gap:12px;}
+        .social-icon{width:32px;height:32px;border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;}
+        .social-icon:hover{border-color:#c9a84c;}
+        .social-icon svg{width:14px;height:14px;fill:rgba(255,255,255,.6);}
+
+        /* TOP NAVIGATION */
+        .top-nav {
+            background-color: var(--dark);
+            color: var(--white);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 16px;
+            margin: 20px 32px 0;
+        }
+
+        .location-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .location-selector svg { fill: var(--text-gray); width: 16px; height: 16px; }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            background-color: var(--primary);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-icon svg { width: 20px; height: 20px; fill: white; }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: var(--white);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--red);
+            border-radius: 50%;
+            border: 2px solid var(--dark);
+        }
+
+        .profile-pic {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .btn-sell {
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-sell:hover { background-color: var(--primary-hover); }
+
+        /* SECONDARY NAVIGATION */
+        .sec-nav {
+            display: flex;
+            align-items: center;
+            padding: 20px 32px;
+            gap: 20px;
+            background-color: var(--white);
+            margin: 0 32px;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            margin-bottom: 24px;
+        }
+
+        .type-toggle {
+            display: flex;
+            background-color: var(--bg);
+            border-radius: 100px;
+            padding: 4px;
+        }
+
+        .type-btn {
+            padding: 10px 24px;
+            border: none;
+            background: none;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .type-btn.active {
+            background-color: var(--primary);
+            color: var(--white);
+            box-shadow: 0 2px 10px rgba(59, 99, 246, 0.3);
+        }
+
+        .search-bar {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: var(--white);
+            padding: 12px 20px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+        }
+
+        .search-bar input {
+            border: none;
+            background: none;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .search-bar svg { fill: var(--text-gray); width: 18px; height: 18px; }
+
+        .filter-btn, .sort-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            background-color: var(--white);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .filter-btn svg, .sort-dropdown svg {
+            fill: var(--text-gray);
+        }
+
+        /* MAIN LAYOUT */
+        .container {
+            display: flex;
+            gap: 32px;
+            padding: 0 32px 32px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            background-color: var(--white);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            height: fit-content;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .sidebar-header h3 { font-size: 16px; font-weight: 600; }
+        .reset-btn { color: var(--orange); border: none; background: none; font-size: 13px; font-weight: 500; cursor: pointer; }
+
+        .filter-group {
+            margin-bottom: 28px;
+        }
+
+        .filter-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .toggle-icon {
+            width: 24px; height: 24px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 22px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc; transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(18px); }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .filter-btn-outline {
+            padding: 10px;
+            border: 1px solid var(--border);
+            background: none;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .filter-btn-outline.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background-color: rgba(59, 99, 246, 0.05);
+        }
+
+        .checkbox-list { display: flex; flex-direction: column; gap: 14px; }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo { width: 20px; height: 20px; object-fit: contain; }
+
+        .checkbox-input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            border-radius: 4px;
+        }
+
+        .more-btn {
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 16px;
+        }
+
+        .price-inputs {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .price-input {
+            flex: 1;
+            padding: 8px;
+            background: var(--bg);
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* RANGE SLIDER MOCK */
+        .range-slider-mock {
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            position: relative;
+            margin: 24px 0 16px;
+        }
+        .range-active {
+            position: absolute;
+            left: 20%;
+            right: 80%; /* Updated width to match layout */
+            width: 60%;
+            height: 100%;
+            background: var(--primary);
+        }
+        .range-thumb {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        .range-thumb.left { left: 20%; transform: translate(-50%, -50%); }
+        .range-thumb.right { left: 80%; transform: translate(-50%, -50%); }
+        
+        .chart-mock {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 40px;
+            margin-bottom: -10px;
+            padding: 0;
+        }
+        .bar { flex: 1; background: #e0e7ff; border-radius: 2px 2px 0 0; }
+        .bar.active { background: #a5b4fc; }
+
+        /* MAIN CONTENT */
+        .content {
+            flex: 1;
+        }
+
+        .content-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .content-title { font-size: 20px; font-weight: 700; }
+
+        .active-filters {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background-color: var(--white);
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-dark);
+            border: 1px solid var(--border);
+        }
+
+        .filter-tag span { cursor: pointer; color: var(--text-gray); }
+
+        /* CAR GRID */
+        .car-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .car-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .car-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+        }
+
+        .car-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .car-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+        .car-type { font-size: 12px; color: var(--text-gray); }
+
+        .bookmark-btn {
+            background: rgba(59, 99, 246, 0.1);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--primary);
+        }
+        
+        .bookmark-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+        .car-image {
+            width: 100%;
+            height: 130px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        .car-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .car-tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+        
+        .car-tag svg { width: 12px; height: 12px; fill: currentColor; }
+
+        .tag-blue { background: rgba(59, 99, 246, 0.1); color: var(--primary); }
+        .tag-purple { background: rgba(139, 92, 246, 0.1); color: var(--purple); }
+        .tag-red { background: rgba(239, 68, 68, 0.1); color: var(--red); }
+        .tag-green { background: rgba(16, 185, 129, 0.1); color: var(--green); }
+
+        .car-price {
+            font-size: 18px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SHARED NAV (matches index.html) -->
+    <nav id="mainNav">
+        <a class="nav-logo" href="index.html">CarTracker</a>
+        <ul class="nav-links">
+            <li><a href="index.html#services">Services</a></li>
+            <li><a href="my-cars.html" class="active">My Cars</a></li>
+            <li><a href="index.html#appointments">Appointments</a></li>
+            <li><a href="index.html#reports">Reports</a></li>
+        </ul>
+        <div class="nav-right-area" id="navRight">
+            <a class="btn-login" href="login.html">Log in</a>
+            <button class="btn-book">Book Service</button>
+        </div>
+    </nav>
+
+    <!-- SECONDARY NAV -->
+    <div class="sec-nav">
+        <div class="search-bar">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" placeholder="Find car here...">
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        
+        
+
+        <!-- CONTENT -->
+        <div class="content">
+            <div class="content-header">
+                <div class="content-title">64 Car Finded</div>
+            </div>
+
+            <div class="car-grid">
+                <!-- CAR 2 -->
+                <div class="car-card" onclick="window.location.href='car-details.html'" style="cursor:pointer;">
+                    <div class="car-header">
+                        <div>
+                            <div class="car-title">BMW i4 : M Sport</div>
+                            <div class="car-type">Sedan</div>
+                        </div>
+                        <button class="bookmark-btn">
+                            <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                        </button>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=400&h=200" alt="BMW i4" class="car-image">
+                    
+                    <div class="car-footer">
+                        <div class="car-tag tag-purple">
+                            <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                            Full Electric
+                        </div>
+                        <div class="car-price">$252,720</div>
+                    </div>
+                </div>
+
+                <!-- CAR 3 -->
+                <div class="car-card" onclick="window.location.href='car-details.html'" style="cursor:pointer;">
+                    <div class="car-header">
+                        <div>
+                            <div class="car-title">Toyota GR Supra</div>
+                            <div class="car-type">Sport Car</div>
+                        </div>
+                        <button class="bookmark-btn">
+                            <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                        </button>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9?auto=format&fit=crop&q=80&w=400&h=200" alt="Toyota GR Supra" class="car-image">
+                    
+                    <div class="car-footer">
+                        <div class="car-tag tag-red">
+                            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            Best Seller
+                        </div>
+                        <div class="car-price">$185,450</div>
+                    </div>
+                </div>
+
+                <!-- CAR 4 -->
+                <div class="car-card" onclick="window.location.href='car-details.html'" style="cursor:pointer;">
+                    <div class="car-header">
+                        <div>
+                            <div class="car-title">Tesla Model S</div>
+                            <div class="car-type">Coupe</div>
+                        </div>
+                        <button class="bookmark-btn">
+                            <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                        </button>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1617704548623-340376564e68?auto=format&fit=crop&q=80&w=400&h=200" alt="Tesla Model S" class="car-image">
+                    
+                    <div class="car-footer">
+                        <div class="car-tag tag-purple">
+                            <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                            Full Electric
+                        </div>
+                        <div class="car-price">$167,250</div>
+                    </div>
+                </div>
+
+            
+
+                <!-- CAR 6 -->
+                <div class="car-card" onclick="window.location.href='car-details.html'" style="cursor:pointer;">
+                    <div class="car-header">
+                        <div>
+                            <div class="car-title">Porsche Taycan</div>
+                            <div class="car-type">Sport Car</div>
+                        </div>
+                        <button class="bookmark-btn">
+                            <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                        </button>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=80&w=400&h=200" alt="Porsche Taycan" class="car-image">
+                    
+                    <div class="car-footer">
+                        <div class="car-tag tag-blue">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+                            Free Test Drive
+                        </div>
+                        <div class="car-price">$90,900</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- SHARED FOOTER (matches index.html) -->
+    <footer class="site-footer">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-logo">CarTracker</div>
+                <p class="footer-tagline">Professional car service and maintenance tracking for every vehicle owner.</p>
+                <p style="font-size:12px;color:rgba(255,255,255,.4);">info@cartracker.com</p>
+                <div class="newsletter" style="margin-top:16px;">
+                    <input type="email" placeholder="Your email address"/>
+                    <button>&rarr;</button>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="#">Oil Change</a></li>
+                    <li><a href="#">Brake Service</a></li>
+                    <li><a href="#">Full Diagnostic</a></li>
+                    <li><a href="#">Tyre Rotation</a></li>
+                    <li><a href="#">Full Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="my-cars.html">My Cars</a></li>
+                    <li><a href="#">Appointments</a></li>
+                    <li><a href="#">Service History</a></li>
+                    <li><a href="#">Invoices</a></li>
+                    <li><a href="#">Feedback</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Our Team</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 CarTracker. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Terms</a>
+                <a href="#">Privacy policy</a>
+                <a href="#">Accessibility</a>
+            </div>
+            <div class="socials">
+                <div class="social-icon"><svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></div>
+                <div class="social-icon"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg></div>
+                <div class="social-icon"><svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 22.43.36a9 9 0 0 1-2.88 1.1A4.52 4.52 0 0 0 16.11 0c-2.5 0-4.52 2-4.52 4.5 0 .35.04.7.11 1.03C7.69 5.34 4.07 3.58 1.64.9a4.5 4.5 0 0 0-.61 2.27c0 1.56.8 2.94 2 3.75A4.49 4.49 0 0 1 .96 6v.06c0 2.18 1.55 4 3.6 4.42a4.52 4.52 0 0 1-2.04.08 4.52 4.52 0 0 0 4.22 3.13A9.05 9.05 0 0 1 0 15.54 12.77 12.77 0 0 0 6.92 17.5c8.3 0 12.85-6.88 12.85-12.85 0-.2 0-.39-.01-.58A9.17 9.17 0 0 0 23 3z"/></svg></div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // Nav shadow on scroll
+    window.addEventListener('scroll', () => {
+        document.getElementById('mainNav').style.boxShadow =
+            window.scrollY > 10 ? '0 2px 20px rgba(0,0,0,.08)' : 'none';
+    });
+    // Login state
+    const navRight = document.getElementById('navRight');
+    if (localStorage.getItem('userLoggedIn') === 'true') {
+        const userName = localStorage.getItem('userName') || 'User';
+        const initial = userName.charAt(0).toUpperCase();
+        navRight.innerHTML = `
+            <a href="profile.html" style="font-size:13px;font-weight:600;color:#1a1a1a;text-decoration:none;display:flex;align-items:center;gap:8px;">
+                <div style="width:32px;height:32px;background:#c9a84c;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">${initial}</div>
+                ${userName}
+            </a>`;
+    }
+    </script>
+</body>
+</html>
