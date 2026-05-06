@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Appointments – CarTracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --gold:#c9a84c;
+  --gold-light:#e8c97a;
+  --dark:#1a1a1a;
+  --brown:#2c1a0e;
+  --bg:#f6f5f2;
+  --white:#fff;
+  --border:#ebebeb;
+  --muted:#888;
+  --danger:#e74c3c;
+  --success:#27ae60;
+  --pending:#c9a84c;
+  --info:#2980b9;
+}
+
+body{font-family:'Inter',sans-serif;color:var(--dark);background:var(--bg);min-height:100vh;}
+
+/* ── NAV ── */
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 60px;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.05);}
+.nav-logo{font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dark);text-decoration:none;}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{font-size:13px;color:#444;text-decoration:none;transition:color .2s;padding-bottom:2px;}
+.nav-links a:hover{color:var(--dark);}
+.nav-links a.active{color:var(--dark);font-weight:600;border-bottom:2px solid var(--gold);}
+.nav-right{display:flex;align-items:center;gap:16px;}
+.btn-login{font-size:13px;color:#444;text-decoration:none;}
+.btn-book-nav{background:var(--dark);color:#fff;font-size:13px;padding:10px 22px;border:none;cursor:pointer;letter-spacing:.5px;text-decoration:none;}
+
+/* ── PAGE HEADER ── */
+.page-header{background:var(--brown);padding:48px 60px 40px;position:relative;overflow:hidden;}
+.page-header::before{content:'';position:absolute;right:-80px;top:-80px;width:350px;height:350px;border-radius:50%;border:80px solid rgba(201,168,76,.08);}
+.page-header::after{content:'';position:absolute;right:120px;bottom:-60px;width:200px;height:200px;border-radius:50%;border:50px solid rgba(201,168,76,.06);}
+.page-header-inner{position:relative;z-index:1;}
+.page-header h1{font-family:'Playfair Display',serif;font-size:36px;color:#fff;margin-bottom:8px;}
+.page-header p{font-size:14px;color:rgba(255,255,255,.55);margin-bottom:24px;}
+.page-header-actions{display:flex;align-items:center;gap:12px;}
+.btn-primary{background:var(--gold);color:#fff;border:none;padding:12px 24px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.5px;transition:.2s;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary:hover{background:var(--gold-light);color:var(--dark);}
+.btn-secondary{background:transparent;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);padding:12px 24px;font-size:13px;font-weight:500;cursor:pointer;letter-spacing:.5px;transition:.2s;display:inline-flex;align-items:center;gap:8px;}
+.btn-secondary:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ── MAIN LAYOUT ── */
+.main{padding:32px 60px 60px;display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start;}
+
+/* ── FILTERS / TOOLBAR ── */
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:16px;}
+.filter-tabs{display:flex;gap:4px;}
+.filter-tab{padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--muted);transition:.2s;letter-spacing:.3px;}
+.filter-tab.active{background:var(--dark);color:#fff;border-color:var(--dark);}
+.filter-tab:hover:not(.active){border-color:var(--dark);color:var(--dark);}
+.search-box{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border);padding:8px 14px;flex:1;max-width:280px;}
+.search-box i{color:var(--muted);font-size:13px;}
+.search-box input{border:none;outline:none;font-size:13px;font-family:inherit;flex:1;color:var(--dark);}
+
+/* ── APPOINTMENT CARDS ── */
+.appointments-list{display:flex;flex-direction:column;gap:12px;}
+.appt-card{background:#fff;border:1px solid var(--border);padding:20px 24px;display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;transition:box-shadow .2s,border-color .2s;cursor:pointer;}
+.appt-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.08);border-color:#ddd;}
+.appt-card.selected{border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,168,76,.15);}
+
+.appt-date-block{text-align:center;background:var(--bg);padding:12px 16px;min-width:70px;}
+.appt-date-day{font-size:26px;font-weight:700;color:var(--dark);line-height:1;}
+.appt-date-month{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px;}
+.appt-date-time{font-size:11px;color:var(--gold);font-weight:600;margin-top:4px;}
+
+.appt-info{}
+.appt-service{font-size:15px;font-weight:600;margin-bottom:4px;}
+.appt-vehicle{font-size:12px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.appt-vehicle i{font-size:11px;}
+.appt-meta{display:flex;align-items:center;gap:12px;}
+.appt-id{font-size:11px;color:#bbb;font-family:monospace;}
+
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;font-size:11px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;}
+.status-badge.PENDING{background:rgba(201,168,76,.12);color:#a07c1a;}
+.status-badge.CONFIRMED{background:rgba(41,128,185,.1);color:#1a6a9a;}
+.status-badge.IN_PROGRESS{background:rgba(156,39,176,.1);color:#7b1fa2;}
+.status-badge.COMPLETED{background:rgba(39,174,96,.1);color:#1a7a4a;}
+.status-badge.CANCELLED{background:rgba(231,76,60,.1);color:#c0392b;}
+
+.appt-actions{display:flex;gap:8px;align-items:center;}
+.btn-icon{width:34px;height:34px;border:1px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.2s;font-size:13px;}
+.btn-icon:hover.edit{border-color:var(--info);color:var(--info);}
+.btn-icon:hover.cancel{border-color:var(--danger);color:var(--danger);}
+.btn-icon:hover.reschedule{border-color:var(--gold);color:var(--gold);}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty-state i{font-size:48px;color:var(--border);margin-bottom:16px;display:block;}
+.empty-state p{font-size:14px;}
+
+/* ── SIDEBAR ── */
+.sidebar{}
+.sidebar-card{background:#fff;border:1px solid var(--border);padding:24px;margin-bottom:16px;}
+.sidebar-card h3{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:16px;}
+
+/* Availability Calendar */
+.calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.calendar-month{font-size:14px;font-weight:600;}
+.cal-nav{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:4px 8px;transition:.2s;}
+.cal-nav:hover{color:var(--dark);}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;}
+.cal-day-label{font-size:10px;color:var(--muted);padding:4px 0;letter-spacing:.3px;font-weight:500;}
+.cal-day{font-size:12px;padding:7px 4px;cursor:pointer;border-radius:2px;transition:.15s;line-height:1;}
+.cal-day:hover:not(.empty):not(.past){background:var(--bg);}
+.cal-day.today{background:var(--dark);color:#fff;font-weight:600;}
+.cal-day.has-appt{position:relative;font-weight:600;color:var(--gold);}
+.cal-day.has-appt::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--gold);border-radius:50%;}
+.cal-day.selected-day{background:var(--gold);color:#fff;}
+.cal-day.past{color:#ddd;cursor:default;}
+.cal-day.empty{cursor:default;}
+
+/* Quick Stats */
+.stats-mini{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.stat-mini{background:var(--bg);padding:14px;text-align:center;}
+.stat-mini-num{font-size:22px;font-weight:700;color:var(--dark);}
+.stat-mini-label{font-size:11px;color:var(--muted);margin-top:2px;}
+.stat-mini-num.gold{color:var(--gold);}
+.stat-mini-num.green{color:var(--success);}
+
+/* Time slots */
+.time-slots{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.time-slot{border:1px solid var(--border);padding:8px;text-align:center;font-size:12px;cursor:pointer;transition:.2s;color:var(--dark);}
+.time-slot:hover{border-color:var(--gold);color:var(--gold);}
+.time-slot.booked{background:var(--bg);color:#ccc;cursor:not-allowed;border-color:var(--border);}
+.time-slot.selected-slot{background:var(--gold);color:#fff;border-color:var(--gold);}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;width:540px;max-width:95vw;max-height:90vh;overflow-y:auto;animation:slideUp .25s ease;}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-header{padding:24px 28px 0;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:16px;}
+.modal-header h2{font-size:18px;font-weight:700;}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:4px 8px;transition:.2s;}
+.modal-close:hover{color:var(--dark);}
+.modal-body{padding:24px 28px;}
+.modal-footer{padding:16px 28px 24px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--border);}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase;font-weight:600;}
+.form-group input,.form-group select,.form-group textarea{width:100%;border:1px solid var(--border);padding:10px 12px;font-size:13px;font-family:inherit;outline:none;color:var(--dark);background:#fff;transition:border-color .2s;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--gold);}
+.form-group textarea{resize:vertical;min-height:80px;}
+
+.btn-danger{background:var(--danger);color:#fff;border:none;padding:11px 24px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.5px;transition:.2s;}
+.btn-danger:hover{background:#c0392b;}
+.btn-ghost{background:none;color:var(--muted);border:1px solid var(--border);padding:11px 24px;font-size:13px;font-weight:500;cursor:pointer;letter-spacing:.5px;transition:.2s;}
+.btn-ghost:hover{border-color:var(--dark);color:var(--dark);}
+.btn-submit{background:var(--dark);color:#fff;border:none;padding:11px 24px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.5px;transition:.2s;}
+.btn-submit:hover{background:#333;}
+
+/* Detail Panel */
+.detail-panel{background:var(--bg);border:1px solid var(--border);padding:0;overflow:hidden;}
+.detail-panel.hidden{display:none;}
+.detail-header{background:var(--dark);color:#fff;padding:20px 24px;}
+.detail-header h3{font-size:15px;font-weight:700;margin-bottom:4px;}
+.detail-header .detail-sub{font-size:12px;color:rgba(255,255,255,.5);}
+.detail-body{padding:20px 24px;}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.detail-row:last-child{border-bottom:none;}
+.detail-label{font-size:12px;color:var(--muted);font-weight:500;}
+.detail-value{font-size:13px;font-weight:600;color:var(--dark);text-align:right;max-width:60%;}
+.detail-actions{padding:16px 24px;background:#fff;border-top:1px solid var(--border);display:flex;gap:8px;}
+.btn-detail{flex:1;padding:10px;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:.5px;border:1px solid var(--border);background:#fff;color:var(--dark);transition:.2s;text-transform:uppercase;}
+.btn-detail:hover{background:var(--dark);color:#fff;border-color:var(--dark);}
+.btn-detail.red{color:var(--danger);}
+.btn-detail.red:hover{background:var(--danger);border-color:var(--danger);color:#fff;}
+.btn-detail.gold{color:var(--gold);}
+.btn-detail.gold:hover{background:var(--gold);border-color:var(--gold);color:#fff;}
+
+/* Toast */
+.toast{position:fixed;bottom:32px;right:32px;background:var(--dark);color:#fff;padding:14px 20px;font-size:13px;font-weight:500;z-index:9999;transform:translateY(80px);opacity:0;transition:.35s;display:flex;align-items:center;gap:10px;min-width:240px;box-shadow:0 8px 30px rgba(0,0,0,.2);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-left:4px solid var(--success);}
+.toast.error{border-left:4px solid var(--danger);}
+.toast.info{border-left:4px solid var(--gold);}
+
+/* Responsive */
+@media(max-width:960px){
+  .main{grid-template-columns:1fr;padding:24px;}
+  nav{padding:18px 24px;}
+  .page-header{padding:32px 24px;}
+  .form-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">CarTracker</a>
+  <ul class="nav-links">
+    <li><a href="index.html#services">Services</a></li>
+    <li><a href="index.html#fleet">Fleet</a></li>
+    <li><a href="appointments.html" class="active">Appointments</a></li>
+    <li><a href="index.html#reports">Reports</a></li>
+  </ul>
+  <div class="nav-right" id="navRight">
+    <a class="btn-login" href="login.html">Log in</a>
+    <a class="btn-book-nav" href="#" onclick="openBookModal()">Book Service</a>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>Appointments</h1>
+    <p>Manage your vehicle service bookings</p>
+    <div class="page-header-actions">
+      <button class="btn-primary" onclick="openBookModal()">
+        <i class="fas fa-plus"></i> Book Appointment
+      </button>
+      <button class="btn-secondary" onclick="refreshAppointments()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT: Appointments List -->
+  <div>
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filterByStatus('ALL',this)">All</button>
+        <button class="filter-tab" onclick="filterByStatus('PENDING',this)">Pending</button>
+        <button class="filter-tab" onclick="filterByStatus('CONFIRMED',this)">Confirmed</button>
+        <button class="filter-tab" onclick="filterByStatus('COMPLETED',this)">Completed</button>
+        <button class="filter-tab" onclick="filterByStatus('CANCELLED',this)">Cancelled</button>
+      </div>
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search service, vehicle…" oninput="renderAppointments()"/>
+      </div>
+    </div>
+
+    <!-- Appointments -->
+    <div class="appointments-list" id="appointmentsList">
+      <!-- rendered by JS -->
+    </div>
+
+    <!-- Detail Panel (mobile / when no sidebar selection) -->
+    <div class="detail-panel hidden" id="detailPanel" style="margin-top:16px;">
+      <div class="detail-header">
+        <h3 id="dp-service">Service Type</h3>
+        <div class="detail-sub" id="dp-id">APT-000</div>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value" id="dp-status"></span></div>
+        <div class="detail-row"><span class="detail-label">Date & Time</span><span class="detail-value" id="dp-datetime"></span></div>
+        <div class="detail-row"><span class="detail-label">Vehicle</span><span class="detail-value" id="dp-vehicle"></span></div>
+        <div class="detail-row"><span class="detail-label">Customer ID</span><span class="detail-value" id="dp-customer"></span></div>
+        <div class="detail-row"><span class="detail-label">Mechanic</span><span class="detail-value" id="dp-mechanic"></span></div>
+        <div class="detail-row"><span class="detail-label">Notes</span><span class="detail-value" id="dp-notes"></span></div>
+        <div class="detail-row"><span class="detail-label">Created</span><span class="detail-value" id="dp-created"></span></div>
+      </div>
+      <div class="detail-actions">
+        <button class="btn-detail gold" onclick="openRescheduleModal()"><i class="fas fa-calendar-alt"></i> Reschedule</button>
+        <button class="btn-detail red" onclick="confirmCancel()"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Sidebar -->
+  <div class="sidebar">
+
+    <!-- Quick Stats -->
+    <div class="sidebar-card">
+      <h3>Overview</h3>
+      <div class="stats-mini">
+        <div class="stat-mini"><div class="stat-mini-num" id="statTotal">0</div><div class="stat-mini-label">Total</div></div>
+        <div class="stat-mini"><div class="stat-mini-num gold" id="statPending">0</div><div class="stat-mini-label">Pending</div></div>
+        <div class="stat-mini"><div class="stat-mini-num green" id="statCompleted">0</div><div class="stat-mini-label">Completed</div></div>
+        <div class="stat-mini"><div class="stat-mini-num" id="statUpcoming">0</div><div class="stat-mini-label">Upcoming</div></div>
+      </div>
+    </div>
+
+    <!-- Availability Calendar -->
+    <div class="sidebar-card">
+      <h3>Availability</h3>
+      <div class="calendar-header">
+        <button class="cal-nav" onclick="prevMonth()"><i class="fas fa-chevron-left"></i></button>
+        <span class="calendar-month" id="calMonth">May 2026</span>
+        <button class="cal-nav" onclick="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div class="calendar-grid" id="calGrid"><!-- rendered --></div>
+    </div>
+
+    <!-- Time Slots -->
+    <div class="sidebar-card">
+      <h3>Time Slots – <span id="slotsDateLabel">Today</span></h3>
+      <div class="time-slots" id="timeSlots"><!-- rendered --></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── BOOK APPOINTMENT MODAL ── -->
+<div class="modal-overlay" id="bookModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2><i class="fas fa-calendar-plus" style="color:var(--gold);margin-right:8px;"></i>Book Appointment</h2>
+      <button class="modal-close" onclick="closeModal('bookModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Customer ID</label>
+          <input type="text" id="book-customerId" placeholder="e.g. CUST-001" required/>
+        </div>
+        <div class="form-group">
+          <label>Vehicle ID</label>
+          <input type="text" id="book-vehicleId" placeholder="e.g. VEH-042" required/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Service Type</label>
+        <select id="book-serviceType">
+          <option value="">Select a service…</option>
+          <option value="Oil Change">Oil Change</option>
+          <option value="Brake Service">Brake Service</option>
+          <option value="Tyre Rotation">Tyre Rotation</option>
+          <option value="Full Diagnostic">Full Diagnostic</option>
+          <option value="Full Service">Full Service</option>
+          <option value="Battery Check">Battery Check</option>
+          <option value="Air Conditioning Service">Air Conditioning Service</option>
+          <option value="Transmission Service">Transmission Service</option>
+          <option value="Engine Tune-Up">Engine Tune-Up</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="book-date" required/>
+        </div>
+        <div class="form-group">
+          <label>Time</label>
+          <input type="time" id="book-time" required/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Notes (optional)</label>
+        <textarea id="book-notes" placeholder="Any specific instructions or concerns…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('bookModal')">Cancel</button>
+      <button class="btn-submit" onclick="createAppointment()"><i class="fas fa-check"></i> Confirm Booking</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── RESCHEDULE MODAL ── -->
+<div class="modal-overlay" id="rescheduleModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2><i class="fas fa-calendar-alt" style="color:var(--gold);margin-right:8px;"></i>Reschedule Appointment</h2>
+      <button class="modal-close" onclick="closeModal('rescheduleModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Select a new date and time for appointment <strong id="reschedule-appt-id"></strong>.</p>
+      <div class="form-row">
+        <div class="form-group">
+          <label>New Date</label>
+          <input type="date" id="reschedule-date" required/>
+        </div>
+        <div class="form-group">
+          <label>New Time</label>
+          <input type="time" id="reschedule-time" required/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Reason for Rescheduling</label>
+        <textarea id="reschedule-reason" placeholder="Optional reason…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('rescheduleModal')">Cancel</button>
+      <button class="btn-submit" onclick="rescheduleAppointment()"><i class="fas fa-calendar-check"></i> Reschedule</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CANCEL CONFIRM MODAL ── -->
+<div class="modal-overlay" id="cancelModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2><i class="fas fa-exclamation-triangle" style="color:var(--danger);margin-right:8px;"></i>Cancel Appointment</h2>
+      <button class="modal-close" onclick="closeModal('cancelModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:#555;line-height:1.7;">Are you sure you want to cancel appointment <strong id="cancel-appt-id"></strong>? This action cannot be undone.</p>
+      <div class="form-group" style="margin-top:20px;">
+        <label>Reason (optional)</label>
+        <textarea id="cancel-reason" placeholder="Tell us why you're cancelling…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('cancelModal')">Keep Appointment</button>
+      <button class="btn-danger" onclick="deleteAppointment()"><i class="fas fa-times"></i> Cancel Appointment</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg"></span></div>
+
+<script>
+// ══════════════════════════════════════════════════
+// DATA LAYER – mock appointments (replace with real API calls)
+// ══════════════════════════════════════════════════
+const SERVICE_TYPES = ['Oil Change','Brake Service','Tyre Rotation','Full Diagnostic','Full Service','Battery Check'];
+const STATUSES = ['PENDING','CONFIRMED','IN_PROGRESS','COMPLETED','CANCELLED'];
+const STATUS_ICONS = {PENDING:'fa-clock',CONFIRMED:'fa-check-circle',IN_PROGRESS:'fa-spinner',COMPLETED:'fa-flag-checkered',CANCELLED:'fa-times-circle'};
+
+let appointments = [
+  {id:'APT-001',customerId:'CUST-101',vehicleId:'VEH-042',mechanicId:'MECH-003',scheduledAt:'2026-05-08T09:00',serviceType:'Oil Change',notes:'Please use synthetic oil.',status:'CONFIRMED',createdAt:'2026-05-01T10:30'},
+  {id:'APT-002',customerId:'CUST-101',vehicleId:'VEH-042',mechanicId:null,scheduledAt:'2026-05-12T14:30',serviceType:'Brake Service',notes:'Front brakes squeaking badly.',status:'PENDING',createdAt:'2026-05-03T09:15'},
+  {id:'APT-003',customerId:'CUST-104',vehicleId:'VEH-017',mechanicId:'MECH-001',scheduledAt:'2026-04-28T11:00',serviceType:'Full Diagnostic',notes:'',status:'COMPLETED',createdAt:'2026-04-20T08:00'},
+  {id:'APT-004',customerId:'CUST-107',vehicleId:'VEH-033',mechanicId:null,scheduledAt:'2026-05-15T10:00',serviceType:'Tyre Rotation',notes:'',status:'PENDING',createdAt:'2026-05-04T14:50'},
+  {id:'APT-005',customerId:'CUST-112',vehicleId:'VEH-058',mechanicId:'MECH-002',scheduledAt:'2026-05-06T15:00',serviceType:'Battery Check',notes:'Car struggles to start in mornings.',status:'IN_PROGRESS',createdAt:'2026-05-05T11:00'},
+  {id:'APT-006',customerId:'CUST-103',vehicleId:'VEH-020',mechanicId:null,scheduledAt:'2026-04-25T09:30',serviceType:'Full Service',notes:'Annual service.',status:'CANCELLED',createdAt:'2026-04-18T16:00'},
+  {id:'APT-007',customerId:'CUST-118',vehicleId:'VEH-071',mechanicId:'MECH-003',scheduledAt:'2026-05-20T13:00',serviceType:'Engine Tune-Up',notes:'',status:'CONFIRMED',createdAt:'2026-05-05T09:00'},
+];
+
+let currentFilter = 'ALL';
+let selectedApptId = null;
+let calYear = 2026, calMonth = 4; // 0-indexed: 4 = May
+let selectedCalDay = null;
+
+// ══════════════════════════════════════════════════
+// CRUD OPERATIONS
+// ══════════════════════════════════════════════════
+
+// createAppointment()
+function createAppointment() {
+  const customerId = document.getElementById('book-customerId').value.trim();
+  const vehicleId  = document.getElementById('book-vehicleId').value.trim();
+  const serviceType= document.getElementById('book-serviceType').value;
+  const date       = document.getElementById('book-date').value;
+  const time       = document.getElementById('book-time').value;
+  const notes      = document.getElementById('book-notes').value.trim();
+
+  if (!customerId || !vehicleId || !serviceType || !date || !time) {
+    showToast('Please fill all required fields.','error'); return;
+  }
+
+  const newAppt = {
+    id: 'APT-' + String(appointments.length + 1).padStart(3,'0'),
+    customerId, vehicleId,
+    mechanicId: null,
+    scheduledAt: date + 'T' + time,
+    serviceType, notes,
+    status: 'PENDING',
+    createdAt: new Date().toISOString().slice(0,16)
+  };
+
+  // API call placeholder:
+  // fetch('/api/appointments', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(newAppt) })
+
+  appointments.push(newAppt);
+  closeModal('bookModal');
+  renderAppointments();
+  updateStats();
+  renderCalendar();
+  showToast('Appointment booked successfully!','success');
+}
+
+// getAppointment() – called when card is clicked
+function getAppointment(id) {
+  const appt = appointments.find(a => a.id === id);
+  if (!appt) return;
+
+  selectedApptId = id;
+
+  // Highlight selected card
+  document.querySelectorAll('.appt-card').forEach(c => c.classList.remove('selected'));
+  const card = document.querySelector(`.appt-card[data-id="${id}"]`);
+  if (card) card.classList.add('selected');
+
+  // Populate detail panel
+  document.getElementById('dp-service').textContent  = appt.serviceType;
+  document.getElementById('dp-id').textContent       = appt.id;
+  document.getElementById('dp-status').innerHTML     = `<span class="status-badge ${appt.status}"><i class="fas ${STATUS_ICONS[appt.status]}"></i> ${appt.status}</span>`;
+  document.getElementById('dp-datetime').textContent = formatDateTime(appt.scheduledAt);
+  document.getElementById('dp-vehicle').textContent  = appt.vehicleId;
+  document.getElementById('dp-customer').textContent = appt.customerId;
+  document.getElementById('dp-mechanic').textContent = appt.mechanicId || 'Not assigned yet';
+  document.getElementById('dp-notes').textContent    = appt.notes || '—';
+  document.getElementById('dp-created').textContent  = formatDateTime(appt.createdAt);
+
+  document.getElementById('detailPanel').classList.remove('hidden');
+}
+
+// updateAppointment() – reschedule
+function rescheduleAppointment() {
+  const newDate   = document.getElementById('reschedule-date').value;
+  const newTime   = document.getElementById('reschedule-time').value;
+  if (!newDate || !newTime) { showToast('Please pick a date and time.','error'); return; }
+
+  const appt = appointments.find(a => a.id === selectedApptId);
+  if (!appt) return;
+
+  // API call placeholder:
+  // fetch(`/api/appointments/${selectedApptId}`, { method:'PUT', body: JSON.stringify({scheduledAt: newDate+'T'+newTime}) })
+
+  appt.scheduledAt = newDate + 'T' + newTime;
+  appt.status = appt.status === 'CANCELLED' ? 'PENDING' : appt.status;
+
+  closeModal('rescheduleModal');
+  renderAppointments();
+  getAppointment(selectedApptId);
+  renderCalendar();
+  showToast('Appointment rescheduled!','info');
+}
+
+// deleteAppointment() – cancel
+function deleteAppointment() {
+  const appt = appointments.find(a => a.id === selectedApptId);
+  if (!appt) return;
+
+  // API call placeholder:
+  // fetch(`/api/appointments/${selectedApptId}`, { method:'DELETE' })
+
+  appt.status = 'CANCELLED';
+
+  closeModal('cancelModal');
+  renderAppointments();
+  getAppointment(selectedApptId);
+  updateStats();
+  showToast('Appointment cancelled.','error');
+}
+
+// getAppointmentsByUser() – filter & render
+function filterByStatus(status, btn) {
+  currentFilter = status;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderAppointments();
+}
+
+// ══════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════
+function renderAppointments() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  let list = appointments.filter(a => {
+    const matchStatus  = currentFilter === 'ALL' || a.status === currentFilter;
+    const matchSearch  = !search ||
+      a.serviceType.toLowerCase().includes(search) ||
+      a.vehicleId.toLowerCase().includes(search) ||
+      a.id.toLowerCase().includes(search) ||
+      a.customerId.toLowerCase().includes(search);
+    return matchStatus && matchSearch;
+  });
+
+  // Sort: upcoming first
+  list.sort((a,b) => new Date(a.scheduledAt) - new Date(b.scheduledAt));
+
+  const container = document.getElementById('appointmentsList');
+
+  if (list.length === 0) {
+    container.innerHTML = `<div class="empty-state"><i class="fas fa-calendar-times"></i><p>No appointments found.</p></div>`;
+    return;
+  }
+
+  container.innerHTML = list.map(a => {
+    const dt   = new Date(a.scheduledAt);
+    const day  = dt.getDate();
+    const mon  = dt.toLocaleString('en',{month:'short'}).toUpperCase();
+    const time = dt.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'});
+    return `
+    <div class="appt-card${selectedApptId===a.id?' selected':''}" data-id="${a.id}" onclick="getAppointment('${a.id}')">
+      <div class="appt-date-block">
+        <div class="appt-date-day">${day}</div>
+        <div class="appt-date-month">${mon}</div>
+        <div class="appt-date-time">${time}</div>
+      </div>
+      <div class="appt-info">
+        <div class="appt-service">${a.serviceType}</div>
+        <div class="appt-vehicle"><i class="fas fa-car"></i>${a.vehicleId} &nbsp;·&nbsp; ${a.customerId}</div>
+        <div class="appt-meta">
+          <span class="status-badge ${a.status}"><i class="fas ${STATUS_ICONS[a.status]}"></i> ${a.status}</span>
+          <span class="appt-id">${a.id}</span>
+        </div>
+      </div>
+      <div class="appt-actions" onclick="event.stopPropagation()">
+        <button class="btn-icon reschedule" title="Reschedule" onclick="selectedApptId='${a.id}';openRescheduleModal()"><i class="fas fa-calendar-alt"></i></button>
+        <button class="btn-icon cancel" title="Cancel" onclick="selectedApptId='${a.id}';confirmCancel()"><i class="fas fa-times"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent     = appointments.length;
+  document.getElementById('statPending').textContent   = appointments.filter(a=>a.status==='PENDING').length;
+  document.getElementById('statCompleted').textContent = appointments.filter(a=>a.status==='COMPLETED').length;
+  const now = new Date();
+  document.getElementById('statUpcoming').textContent  = appointments.filter(a=>new Date(a.scheduledAt)>now && a.status!=='CANCELLED').length;
+}
+
+function refreshAppointments() {
+  renderAppointments();
+  updateStats();
+  renderCalendar();
+  showToast('Appointments refreshed.','info');
+}
+
+// ══════════════════════════════════════════════════
+// CALENDAR
+// ══════════════════════════════════════════════════
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+function renderCalendar() {
+  document.getElementById('calMonth').textContent = MONTHS[calMonth] + ' ' + calYear;
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const today = new Date();
+
+  const apptDays = new Set(
+    appointments
+      .filter(a => a.status !== 'CANCELLED')
+      .map(a => { const d = new Date(a.scheduledAt); return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate(); })
+  );
+
+  let html = DAYS.map(d=>`<div class="cal-day-label">${d}</div>`).join('');
+  for (let i=0;i<firstDay;i++) html += `<div class="cal-day empty"></div>`;
+  for (let d=1;d<=daysInMonth;d++) {
+    const isPast = new Date(calYear,calMonth,d) < new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    const isToday = calYear===today.getFullYear() && calMonth===today.getMonth() && d===today.getDate();
+    const key = calYear+'-'+calMonth+'-'+d;
+    const hasAppt = apptDays.has(key);
+    const isSel = selectedCalDay === key;
+    let cls = 'cal-day';
+    if (isPast && !isToday) cls += ' past';
+    if (isToday) cls += ' today';
+    if (hasAppt && !isToday) cls += ' has-appt';
+    if (isSel && !isToday) cls += ' selected-day';
+    html += `<div class="${cls}" onclick="selectCalDay(${d})">${d}</div>`;
+  }
+  document.getElementById('calGrid').innerHTML = html;
+}
+
+function selectCalDay(d) {
+  selectedCalDay = calYear+'-'+calMonth+'-'+d;
+  const date = new Date(calYear, calMonth, d);
+  document.getElementById('slotsDateLabel').textContent =
+    date.toLocaleDateString('en',{month:'short',day:'numeric'});
+  renderTimeSlots(date);
+  renderCalendar();
+}
+
+function renderTimeSlots(date) {
+  const slots = ['08:00','09:00','10:00','11:00','13:00','14:00','15:00','16:00'];
+  const booked = appointments
+    .filter(a => {
+      const d = new Date(a.scheduledAt);
+      return d.getFullYear()===date.getFullYear() &&
+             d.getMonth()===date.getMonth() &&
+             d.getDate()===date.getDate() &&
+             a.status !== 'CANCELLED';
+    })
+    .map(a => new Date(a.scheduledAt).toTimeString().slice(0,5));
+
+  document.getElementById('timeSlots').innerHTML = slots.map(s => {
+    const isBooked = booked.includes(s);
+    return `<div class="time-slot${isBooked?' booked':''}" onclick="${isBooked?'':'prefillBookModal(\"'+s+'\")'}">${s}${isBooked?'<br><span style="font-size:10px;color:#bbb;">Taken</span>':''}</div>`;
+  }).join('');
+}
+
+function prevMonth() {
+  calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar();
+}
+function nextMonth() {
+  calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar();
+}
+
+// ══════════════════════════════════════════════════
+// MODAL HELPERS
+// ══════════════════════════════════════════════════
+function openBookModal() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('book-date').min = today;
+  document.getElementById('book-date').value = today;
+  document.getElementById('bookModal').classList.add('show');
+}
+function openRescheduleModal() {
+  if (!selectedApptId) { showToast('Please select an appointment first.','error'); return; }
+  const appt = appointments.find(a=>a.id===selectedApptId);
+  if (!appt) return;
+  if (appt.status === 'CANCELLED' || appt.status === 'COMPLETED') {
+    showToast('Cannot reschedule a '+appt.status.toLowerCase()+' appointment.','error'); return;
+  }
+  document.getElementById('reschedule-appt-id').textContent = selectedApptId;
+  document.getElementById('reschedule-date').value = appt.scheduledAt.slice(0,10);
+  document.getElementById('reschedule-time').value = appt.scheduledAt.slice(11,16);
+  document.getElementById('rescheduleModal').classList.add('show');
+}
+function confirmCancel() {
+  if (!selectedApptId) { showToast('Please select an appointment first.','error'); return; }
+  const appt = appointments.find(a=>a.id===selectedApptId);
+  if (!appt) return;
+  if (appt.status === 'CANCELLED') { showToast('Already cancelled.','error'); return; }
+  if (appt.status === 'COMPLETED') { showToast('Cannot cancel a completed appointment.','error'); return; }
+  document.getElementById('cancel-appt-id').textContent = selectedApptId;
+  document.getElementById('cancelModal').classList.add('show');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+function prefillBookModal(time) {
+  if (selectedCalDay) {
+    const parts = selectedCalDay.split('-');
+    const d = new Date(parseInt(parts[0]),parseInt(parts[1]),parseInt(parts[2]));
+    document.getElementById('book-date').value = d.toISOString().split('T')[0];
+  }
+  document.getElementById('book-time').value = time;
+  openBookModal();
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('show'); });
+});
+
+// ══════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════
+function formatDateTime(dt) {
+  return new Date(dt).toLocaleString('en',{weekday:'short',month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  const icon = type==='success'?'fa-check-circle':type==='error'?'fa-times-circle':'fa-info-circle';
+  t.className = `toast ${type}`;
+  t.innerHTML = `<i class="fas ${icon}"></i><span>${msg}</span>`;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+// Nav user state
+const navRight = document.getElementById('navRight');
+if (localStorage.getItem('userLoggedIn') === 'true') {
+  const userName = localStorage.getItem('userName') || 'User';
+  const initial = userName.charAt(0).toUpperCase();
+  navRight.innerHTML = `
+    <a href="profile.html" style="font-size:13px;font-weight:600;color:var(--dark);text-decoration:none;display:flex;align-items:center;gap:8px;">
+      <div style="width:32px;height:32px;background:var(--gold);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">${initial}</div>
+      ${userName}
+    </a>`;
+}
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+renderAppointments();
+updateStats();
+renderCalendar();
+renderTimeSlots(new Date());
+</script>
+</body>
+</html>
