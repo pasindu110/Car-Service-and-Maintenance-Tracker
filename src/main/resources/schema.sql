@@ -121,6 +121,21 @@ CREATE TABLE IF NOT EXISTS payments (
     FOREIGN KEY (customer_id)  REFERENCES users(id)
 );
 
+-- ── Payment Cards ─────────────────────────────────────────────────────────────
+-- Stores masked card details only. Full card number and CVV are NEVER stored.
+CREATE TABLE IF NOT EXISTS payment_cards (
+    id               VARCHAR(36)  NOT NULL PRIMARY KEY,
+    cardholder_name  VARCHAR(100) NOT NULL,
+    last4_digits     CHAR(4)      NOT NULL,
+    masked_number    VARCHAR(25)  NOT NULL,
+    expiry_month     TINYINT      NOT NULL COMMENT '1–12',
+    expiry_year      TINYINT      NOT NULL COMMENT '2-digit year e.g. 27',
+    card_type        ENUM('VISA','MASTERCARD','AMEX','DISCOVER','UNKNOWN') NOT NULL DEFAULT 'UNKNOWN',
+    country          VARCHAR(10)  NOT NULL,
+    created_at       DATETIME     NOT NULL,
+    updated_at       DATETIME     NOT NULL
+);
+
 -- ── Feedback ──────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS feedback (
     id                VARCHAR(36) NOT NULL PRIMARY KEY,
