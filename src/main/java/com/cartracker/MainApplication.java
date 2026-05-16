@@ -5,12 +5,16 @@ import com.cartracker.repository.appointment.AppointmentRepository;
 import com.cartracker.repository.appointment.JdbcAppointmentRepository;
 import com.cartracker.repository.feedback.FeedbackRepository;
 import com.cartracker.repository.feedback.JdbcFeedbackRepository;
+import com.cartracker.repository.paymentcard.JdbcPaymentCardRepository;
+import com.cartracker.repository.paymentcard.PaymentCardRepository;
 import com.cartracker.repository.servicerecord.JdbcServiceRecordRepository;
 import com.cartracker.repository.servicerecord.ServiceRecordRepository;
 import com.cartracker.repository.user.JdbcUserRepository;
 import com.cartracker.repository.user.UserRepository;
 import com.cartracker.repository.vehicle.JdbcVehicleRepository;
 import com.cartracker.repository.vehicle.VehicleRepository;
+import com.cartracker.service.paymentcard.PaymentCardService;
+import com.cartracker.service.paymentcard.PaymentCardServiceImpl;
 
 import java.sql.Connection;
 
@@ -48,11 +52,15 @@ public class MainApplication {
 
             System.out.println("[System] All Database Repositories initialized successfully.");
 
-            // 3. Initialize Services
-            com.cartracker.service.user.UserService userService = new com.cartracker.service.user.UserServiceImpl(userRepository);
+            // 3. Initialize Repositories – PaymentCard (JDBC / MySQL)
+            PaymentCardRepository paymentCardRepository = new JdbcPaymentCardRepository();
 
-            // 4. Start Web Server
-            WebServer webServer = new WebServer(userService);
+            // 4. Initialize Services
+            com.cartracker.service.user.UserService userService = new com.cartracker.service.user.UserServiceImpl(userRepository);
+            PaymentCardService paymentCardService = new PaymentCardServiceImpl(paymentCardRepository);
+
+            // 5. Start Web Server
+            WebServer webServer = new WebServer(userService, paymentCardService);
             webServer.start();
 
             System.out.println("\n[System] Application is ready! Open http://localhost:8080 in your browser.");

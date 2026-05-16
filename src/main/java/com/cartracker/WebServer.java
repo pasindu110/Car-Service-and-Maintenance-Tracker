@@ -1,7 +1,9 @@
 package com.cartracker;
 
+import com.cartracker.controller.paymentcard.PaymentCardController;
 import com.cartracker.model.user.Customer;
 import com.cartracker.model.user.User;
+import com.cartracker.service.paymentcard.PaymentCardService;
 import com.cartracker.service.user.UserService;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -17,19 +19,22 @@ import java.util.Optional;
 
 public class WebServer {
 
-    private final UserService userService;
+    private final UserService        userService;
+    private final PaymentCardService paymentCardService;
 
-    public WebServer(UserService userService) {
-        this.userService = userService;
+    public WebServer(UserService userService, PaymentCardService paymentCardService) {
+        this.userService        = userService;
+        this.paymentCardService = paymentCardService;
     }
 
     public void start() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
-        
+
         server.createContext("/", new StaticFileHandler());
         server.createContext("/api/signup", new SignUpHandler());
         server.createContext("/api/login", new LoginHandler());
-        
+        server.createContext("/api/payment-cards", new PaymentCardController(paymentCardService));
+
         server.setExecutor(null);
         server.start();
         System.out.println("[Web Server] Started at http://localhost:8080");
