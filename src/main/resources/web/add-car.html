@@ -633,6 +633,8 @@
         <!-- Progress bar removed as form is now single step -->
 
         <form action="my-cars.html" id="addCarForm" method="POST">
+            <!-- Hidden field: logged-in user's ID (set by JS before submit) -->
+            <input type="hidden" name="owner_id" id="ownerIdField">
             <div class="form-section active">
                 <div class="form-section-header" style="cursor: default;">
                     <div class="section-title">Vehicle Details</div>
@@ -817,7 +819,56 @@
             </a>`;
         }
 
-        // Form submission can be handled by backend or AJAX
+        // Form submission via AJAX → POST /api/vehicles
+        document.getElementById('addCarForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const userEmail = localStorage.getItem('userEmail') || '';
+            if (!userEmail) {
+                alert('You must be logged in to add a vehicle. Please log in first.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // ── Step 1: Fetch the real user ID from server by email ──────────
+            let resolvedId = localStorage.getItem('userId') || '';
+            try {
+                const idRes  = await fetch('/api/user-id?email=' + encodeURIComponent(userEmail));
+                const idJson = await idRes.json();
+                if (idJson.success) {
+                    resolvedId = idJson.id;
+                    localStorage.setItem('userId', resolvedId); // cache for next time
+                }
+            } catch (err) { /* network error – fall back to cached value */ }
+
+            if (!resolvedId) {
+                alert('Could not find your account on the server. Please log in again.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // ── Step 2: Submit the vehicle form ─────────────────────────────
+            document.getElementById('ownerIdField').value = resolvedId;
+            const form = e.target;
+            const data = new URLSearchParams(new FormData(form));
+            data.append('user_email', userEmail);
+
+            try {
+                const res  = await fetch('/api/vehicles', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: data.toString()
+                });
+                const json = await res.json();
+                if (json.success) {
+                    window.location.href = 'my-cars.html';
+                } else {
+                    alert('Error: ' + json.message);
+                }
+            } catch (err) {
+                alert('Failed to connect to server. Make sure the app is running.');
+            }
+        });
     </script>
 </body>
 

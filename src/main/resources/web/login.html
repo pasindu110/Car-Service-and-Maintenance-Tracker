@@ -359,6 +359,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         if (result.success) {
             // Save user details to localStorage
             localStorage.setItem("userLoggedIn", "true");
+            localStorage.setItem("userId", result.id);
             localStorage.setItem("userName", result.name);
             localStorage.setItem("userEmail", result.email);
             
