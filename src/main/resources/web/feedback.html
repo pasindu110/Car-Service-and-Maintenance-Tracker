@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Feedback – CarTracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;color:#1a1a1a;background:#f8f8f6;min-height:100vh;}
+
+    /* ── NAV ── */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 60px;background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);border-bottom:1px solid #f0f0f0;}
+    .nav-logo{font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;color:#1a1a1a;}
+    .nav-links{display:flex;gap:32px;list-style:none;}
+    .nav-links a{font-size:13px;color:#444;text-decoration:none;transition:color .2s;}
+    .nav-links a:hover,.nav-links a.active{color:#1a1a1a;font-weight:600;}
+    .nav-right{display:flex;align-items:center;gap:16px;}
+    .btn-login{font-size:13px;color:#444;text-decoration:none;}
+    .btn-book{background:#1a1a1a;color:#fff;font-size:13px;padding:10px 22px;border:none;cursor:pointer;letter-spacing:.5px;}
+
+    /* ── PAGE HEADER ── */
+    .page-header{background:#1a1a1a;color:#fff;padding:100px 60px 60px;}
+    .page-header-inner{max-width:1100px;margin:0 auto;}
+    .page-header p.breadcrumb{font-size:12px;color:rgba(255,255,255,.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;}
+    .page-header h1{font-size:42px;font-weight:700;line-height:1.15;margin-bottom:12px;}
+    .page-header p.sub{font-size:15px;color:rgba(255,255,255,.65);line-height:1.7;max-width:540px;}
+
+    /* ── MAIN CONTENT ── */
+    .main{max-width:1100px;margin:0 auto;padding:50px 60px 80px;}
+
+    /* ── STATS BAR ── */
+    .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#e8e8e8;margin-bottom:48px;border:1px solid #e8e8e8;}
+    .stat-box{background:#fff;padding:28px 24px;text-align:center;}
+    .stat-box .num{font-size:30px;font-weight:700;color:#c9a84c;}
+    .stat-box .lbl{font-size:12px;color:#888;margin-top:4px;text-transform:uppercase;letter-spacing:.5px;}
+
+    /* ── TWO-COL LAYOUT ── */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;}
+
+    /* ── FORM CARD ── */
+    .card{background:#fff;padding:36px;border:1px solid #efefef;}
+    .card h2{font-size:18px;font-weight:700;margin-bottom:6px;}
+    .card p.desc{font-size:13px;color:#888;margin-bottom:28px;line-height:1.6;}
+
+    .form-group{margin-bottom:18px;}
+    .form-group label{display:block;font-size:11px;color:#888;margin-bottom:7px;letter-spacing:.5px;text-transform:uppercase;}
+    .form-group input,.form-group select,.form-group textarea{width:100%;border:1px solid #e8e8e8;padding:11px 13px;font-size:13px;font-family:inherit;outline:none;color:#1a1a1a;background:#fff;resize:vertical;}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#c9a84c;}
+    .form-group textarea{min-height:100px;}
+
+    /* Star rating */
+    .star-group{margin-bottom:18px;}
+    .star-group label{display:block;font-size:11px;color:#888;margin-bottom:10px;letter-spacing:.5px;text-transform:uppercase;}
+    .stars{display:flex;gap:6px;}
+    .star{font-size:28px;cursor:pointer;color:#e0e0e0;transition:color .15s,transform .15s;line-height:1;}
+    .star:hover,.star.active{color:#c9a84c;transform:scale(1.15);}
+
+    /* Buttons */
+    .btn-primary{background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;padding:13px 28px;border:none;cursor:pointer;letter-spacing:.5px;transition:background .2s;width:100%;margin-top:4px;}
+    .btn-primary:hover{background:#333;}
+    .btn-gold{background:#c9a84c;color:#fff;font-size:13px;font-weight:600;padding:10px 20px;border:none;cursor:pointer;letter-spacing:.5px;transition:background .2s;}
+    .btn-gold:hover{background:#b8933c;}
+    .btn-ghost{background:none;color:#1a1a1a;font-size:12px;font-weight:600;padding:8px 16px;border:1px solid #ddd;cursor:pointer;transition:.2s;}
+    .btn-ghost:hover{background:#f5f5f5;}
+    .btn-danger{background:none;color:#d9534f;font-size:12px;padding:6px 14px;border:1px solid #f5c6cb;cursor:pointer;transition:.2s;}
+    .btn-danger:hover{background:#fff1f0;}
+
+    /* ── FEEDBACK LIST ── */
+    .list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+    .list-header h2{font-size:18px;font-weight:700;}
+    .filter-row{display:flex;gap:8px;}
+    .filter-btn{font-size:12px;padding:7px 16px;border:1px solid #e0e0e0;background:#fff;cursor:pointer;color:#555;transition:.2s;}
+    .filter-btn.active,.filter-btn:hover{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+
+    .feedback-item{background:#fff;border:1px solid #efefef;padding:22px 24px;margin-bottom:12px;position:relative;}
+    .feedback-item:last-child{margin-bottom:0;}
+    .fi-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+    .fi-meta{display:flex;align-items:center;gap:12px;}
+    .fi-avatar{width:36px;height:36px;border-radius:50%;background:#1a1a1a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+    .fi-name{font-size:14px;font-weight:600;}
+    .fi-service{font-size:12px;color:#999;margin-top:2px;}
+    .fi-stars{display:flex;gap:2px;}
+    .fi-star{font-size:15px;color:#e0e0e0;}
+    .fi-star.on{color:#c9a84c;}
+    .fi-date{font-size:11px;color:#bbb;white-space:nowrap;}
+    .fi-comment{font-size:13px;color:#555;line-height:1.7;margin-bottom:14px;}
+    .fi-actions{display:flex;gap:8px;align-items:center;}
+    .fi-badge{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;padding:3px 10px;border-radius:2px;background:#f0f8f0;color:#2e7d32;border:1px solid #c8e6c9;}
+
+    /* Edit inline */
+    .fi-edit-form{margin-top:14px;padding-top:14px;border-top:1px solid #f0f0f0;display:none;}
+    .fi-edit-form.open{display:block;}
+    .edit-stars{display:flex;gap:5px;margin-bottom:12px;}
+    .edit-star{font-size:24px;cursor:pointer;color:#e0e0e0;transition:color .15s;}
+    .edit-star:hover,.edit-star.active{color:#c9a84c;}
+
+    /* Toast */
+    .toast{position:fixed;bottom:32px;right:32px;background:#1a1a1a;color:#fff;padding:14px 22px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transform:translateY(10px);transition:.3s;pointer-events:none;max-width:320px;}
+    .toast.show{opacity:1;transform:translateY(0);}
+    .toast.success{border-left:3px solid #c9a84c;}
+    .toast.error{border-left:3px solid #d9534f;}
+
+    /* Empty state */
+    .empty{text-align:center;padding:60px 20px;color:#bbb;}
+    .empty-icon{font-size:48px;margin-bottom:16px;}
+    .empty p{font-size:14px;}
+
+    /* Loading */
+    .loading{text-align:center;padding:40px;color:#bbb;font-size:13px;}
+
+    /* Alert */
+    .alert{padding:13px 16px;font-size:13px;margin-bottom:16px;border-left:3px solid;}
+    .alert.success{background:#f0f8f0;color:#2e7d32;border-color:#4caf50;}
+    .alert.error{background:#fff1f0;color:#c62828;border-color:#d9534f;}
+
+    @media(max-width:880px){
+      nav{padding:16px 24px;}
+      .nav-links{display:none;}
+      .page-header{padding:90px 24px 40px;}
+      .page-header h1{font-size:28px;}
+      .main{padding:30px 24px 60px;}
+      .stats-bar{grid-template-columns:repeat(2,1fr);}
+      .two-col{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">CarTracker</a>
+  <ul class="nav-links">
+    <li><a href="index.html#services">Services</a></li>
+    <li><a href="index.html#fleet">Fleet</a></li>
+    <li><a href="index.html#appointments">Appointments</a></li>
+    <li><a href="index.html#reports">Reports</a></li>
+    <li><a href="feedback.html" class="active">Feedback</a></li>
+  </ul>
+  <div class="nav-right" id="navRight">
+    <a class="btn-login" href="login.html">Log in</a>
+    <button class="btn-book" onclick="window.location='index.html'">Book Service</button>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <p class="breadcrumb">CarTracker &nbsp;/&nbsp; Feedback</p>
+    <h1>Service Feedback</h1>
+    <p class="sub">Rate your experience, share your thoughts, and help us improve every service we deliver.</p>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-box"><div class="num" id="statTotal">—</div><div class="lbl">Total Reviews</div></div>
+    <div class="stat-box"><div class="num" id="statAvg">—</div><div class="lbl">Avg Rating</div></div>
+    <div class="stat-box"><div class="num" id="stat5">—</div><div class="lbl">5-Star Reviews</div></div>
+    <div class="stat-box"><div class="num" id="statRecent">—</div><div class="lbl">This Month</div></div>
+  </div>
+
+  <div class="two-col">
+
+    <!-- LEFT: FORM -->
+    <div>
+      <div class="card">
+        <h2 id="formTitle">Leave a Review</h2>
+        <p class="desc" id="formDesc">Share your experience with one of our services. Your feedback helps us deliver better care for every vehicle.</p>
+
+        <div id="formAlert" style="display:none;"></div>
+
+        <input type="hidden" id="editingId" value=""/>
+
+        <div class="form-group">
+          <label>User ID</label>
+          <input type="text" id="fUserId" placeholder="e.g. user-001"/>
+        </div>
+        <div class="form-group">
+          <label>Service ID</label>
+          <input type="text" id="fServiceId" placeholder="e.g. svc-001"/>
+        </div>
+
+        <div class="star-group">
+          <label>Your Rating</label>
+          <div class="stars" id="starPicker">
+            <span class="star" data-v="1">★</span>
+            <span class="star" data-v="2">★</span>
+            <span class="star" data-v="3">★</span>
+            <span class="star" data-v="4">★</span>
+            <span class="star" data-v="5">★</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Comment (optional)</label>
+          <textarea id="fComment" placeholder="Tell us about your experience…"></textarea>
+        </div>
+
+        <button class="btn-primary" id="submitBtn" onclick="submitFeedback()">Submit Feedback</button>
+        <button class="btn-ghost" id="cancelEditBtn" style="width:100%;margin-top:10px;display:none;" onclick="cancelEdit()">Cancel Edit</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: LIST -->
+    <div>
+      <div class="list-header">
+        <h2>All Feedback</h2>
+        <div class="filter-row">
+          <button class="filter-btn active" onclick="filterFeedback('all',this)">All</button>
+          <button class="filter-btn" onclick="filterFeedback(5,this)">★ 5</button>
+          <button class="filter-btn" onclick="filterFeedback(4,this)">★ 4</button>
+          <button class="filter-btn" onclick="filterFeedback(3,this)">≤ 3</button>
+        </div>
+      </div>
+
+      <div id="feedbackList"><div class="loading">Loading feedback…</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const API = '/api/feedback';
+  let allFeedbacks = [];
+  let selectedRating = 0;
+  let currentFilter = 'all';
+
+  // ── Star Picker ──────────────────────────────────────────────────────────
+  document.querySelectorAll('#starPicker .star').forEach(star => {
+    star.addEventListener('mouseenter', () => highlightStars(parseInt(star.dataset.v)));
+    star.addEventListener('mouseleave', () => highlightStars(selectedRating));
+    star.addEventListener('click', () => {
+      selectedRating = parseInt(star.dataset.v);
+      highlightStars(selectedRating);
+    });
+  });
+
+  function highlightStars(n) {
+    document.querySelectorAll('#starPicker .star').forEach(s => {
+      s.classList.toggle('active', parseInt(s.dataset.v) <= n);
+    });
+  }
+
+  // ── API CALLS ────────────────────────────────────────────────────────────
+
+  async function loadFeedbacks() {
+    try {
+      const res = await fetch(API);
+      if (!res.ok) throw new Error('Failed to load');
+      allFeedbacks = await res.json();
+      renderStats();
+      renderList();
+    } catch(e) {
+      document.getElementById('feedbackList').innerHTML =
+        `<div class="empty"><div class="empty-icon">⚠️</div><p>Could not connect to the server. Make sure the backend is running.</p></div>`;
+    }
+  }
+
+  async function submitFeedback() {
+    const userId    = document.getElementById('fUserId').value.trim();
+    const serviceId = document.getElementById('fServiceId').value.trim();
+    const comment   = document.getElementById('fComment').value.trim();
+    const editingId = document.getElementById('editingId').value;
+
+    if (!userId)    return showFormAlert('error', 'Please enter a User ID.');
+    if (!serviceId) return showFormAlert('error', 'Please enter a Service ID.');
+    if (!selectedRating) return showFormAlert('error', 'Please select a star rating.');
+
+    hideFormAlert();
+
+    if (editingId) {
+      // UPDATE
+      try {
+        const res = await fetch(`${API}/${editingId}`, {
+          method: 'PUT',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({rating: selectedRating, comment})
+        });
+        if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Update failed'); }
+        toast('Feedback updated successfully!', 'success');
+        cancelEdit();
+        loadFeedbacks();
+      } catch(e) { showFormAlert('error', e.message); }
+    } else {
+      // CREATE
+      try {
+        const res = await fetch(API, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({userId, serviceId, rating: selectedRating, comment})
+        });
+        if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Submission failed'); }
+        toast('Feedback submitted! Thank you.', 'success');
+        resetForm();
+        loadFeedbacks();
+      } catch(e) { showFormAlert('error', e.message); }
+    }
+  }
+
+  async function deleteFeedback(id) {
+    if (!confirm('Delete this feedback? This action cannot be undone.')) return;
+    try {
+      const res = await fetch(`${API}/${id}`, {method:'DELETE'});
+      if (!res.ok) throw new Error('Delete failed');
+      toast('Feedback deleted.', 'success');
+      loadFeedbacks();
+    } catch(e) { toast(e.message, 'error'); }
+  }
+
+  // ── RENDER ───────────────────────────────────────────────────────────────
+
+  function renderStats() {
+    const total  = allFeedbacks.length;
+    const avg    = total ? (allFeedbacks.reduce((s,f) => s + f.rating, 0) / total).toFixed(1) : '—';
+    const five   = allFeedbacks.filter(f => f.rating === 5).length;
+    const now    = new Date();
+    const recent = allFeedbacks.filter(f => {
+      if (!f.createdAt) return false;
+      const d = new Date(f.createdAt);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }).length;
+
+    document.getElementById('statTotal').textContent  = total || '0';
+    document.getElementById('statAvg').textContent    = avg + (total ? '★' : '');
+    document.getElementById('stat5').textContent      = five;
+    document.getElementById('statRecent').textContent = recent;
+  }
+
+  function renderList() {
+    let list = [...allFeedbacks];
+    if (currentFilter !== 'all') {
+      if (currentFilter <= 3) {
+        list = list.filter(f => f.rating <= 3);
+      } else {
+        list = list.filter(f => f.rating === currentFilter);
+      }
+    }
+    list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+
+    const container = document.getElementById('feedbackList');
+    if (!list.length) {
+      container.innerHTML = `<div class="empty"><div class="empty-icon">💬</div><p>No feedback found for this filter.</p></div>`;
+      return;
+    }
+
+    container.innerHTML = list.map(f => `
+      <div class="feedback-item" id="item-${f.feedbackId}"
+           data-id="${escAttr(f.feedbackId)}"
+           data-userid="${escAttr(f.userId)}"
+           data-serviceid="${escAttr(f.serviceId)}"
+           data-rating="${f.rating}"
+           data-comment="${escAttr(f.comment || '')}">
+        <div class="fi-top">
+          <div class="fi-meta">
+            <div class="fi-avatar">${(f.userId || 'U').charAt(0).toUpperCase()}</div>
+            <div>
+              <div class="fi-name">${escHtml(f.userId)}</div>
+              <div class="fi-service">Service: ${escHtml(f.serviceId)}</div>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="fi-stars">${starsHtml(f.rating)}</div>
+            <div class="fi-date">${formatDate(f.createdAt)}</div>
+          </div>
+        </div>
+        ${f.comment ? `<div class="fi-comment">"${escHtml(f.comment)}"</div>` : '<div class="fi-comment" style="color:#bbb;font-style:italic;">No comment provided.</div>'}
+        <div class="fi-actions">
+          <button class="btn-ghost edit-btn">✏️ Edit</button>
+          <button class="btn-danger delete-btn">🗑 Delete</button>
+          <span class="fi-badge">★ ${f.rating}/5</span>
+        </div>
+      </div>
+    `).join('');
+
+    // Attach events after rendering so no quoting issues with any characters
+    container.querySelectorAll('.edit-btn').forEach(btn => {
+      const item = btn.closest('.feedback-item');
+      btn.addEventListener('click', () => startEdit(
+        item.dataset.id,
+        item.dataset.userid,
+        item.dataset.serviceid,
+        parseInt(item.dataset.rating),
+        item.dataset.comment
+      ));
+    });
+    container.querySelectorAll('.delete-btn').forEach(btn => {
+      const item = btn.closest('.feedback-item');
+      btn.addEventListener('click', () => deleteFeedback(item.dataset.id));
+    });
+  }
+
+  function starsHtml(n) {
+    return [1,2,3,4,5].map(i => `<span class="fi-star ${i<=n?'on':''}">★</span>`).join('');
+  }
+
+  function filterFeedback(val, btn) {
+    currentFilter = val;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderList();
+  }
+
+  // ── EDIT ─────────────────────────────────────────────────────────────────
+
+  function startEdit(id, userId, serviceId, rating, comment) {
+    document.getElementById('editingId').value   = id;
+    document.getElementById('fUserId').value     = userId;
+    document.getElementById('fServiceId').value  = serviceId;
+    document.getElementById('fComment').value    = comment;
+    selectedRating = rating;
+    highlightStars(rating);
+
+    document.getElementById('formTitle').textContent = 'Edit Feedback';
+    document.getElementById('formDesc').textContent  = 'Update your star rating or comment below.';
+    document.getElementById('submitBtn').textContent = 'Update Feedback';
+    document.getElementById('cancelEditBtn').style.display = 'block';
+    hideFormAlert();
+
+    // Scroll to form
+    document.querySelector('.card').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  function cancelEdit() {
+    resetForm();
+  }
+
+  function resetForm() {
+    document.getElementById('editingId').value   = '';
+    document.getElementById('fUserId').value     = '';
+    document.getElementById('fServiceId').value  = '';
+    document.getElementById('fComment').value    = '';
+    selectedRating = 0;
+    highlightStars(0);
+
+    document.getElementById('formTitle').textContent = 'Leave a Review';
+    document.getElementById('formDesc').textContent  = 'Share your experience with one of our services. Your feedback helps us deliver better care for every vehicle.';
+    document.getElementById('submitBtn').textContent = 'Submit Feedback';
+    document.getElementById('cancelEditBtn').style.display = 'none';
+    hideFormAlert();
+  }
+
+  // ── HELPERS ──────────────────────────────────────────────────────────────
+
+  function toast(msg, type='success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast show ${type}`;
+    setTimeout(() => t.className = 'toast', 3200);
+  }
+
+  function showFormAlert(type, msg) {
+    const el = document.getElementById('formAlert');
+    el.innerHTML = `<div class="alert ${type}">${msg}</div>`;
+    el.style.display = 'block';
+  }
+
+  function hideFormAlert() {
+    const el = document.getElementById('formAlert');
+    el.style.display = 'none';
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function escAttr(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+  }
+
+  function formatDate(dt) {
+    if (!dt) return '';
+    try {
+      const d = new Date(dt);
+      return d.toLocaleDateString('en-US', {year:'numeric',month:'short',day:'numeric'});
+    } catch { return dt; }
+  }
+
+  // ── NAV USER STATE ────────────────────────────────────────────────────────
+  const navRight = document.getElementById('navRight');
+  if (localStorage.getItem('userLoggedIn') === 'true') {
+    const userName = localStorage.getItem('userName') || 'User';
+    const initial  = userName.charAt(0).toUpperCase();
+    navRight.innerHTML = `
+      <a href="profile.html" style="font-size:13px;font-weight:600;color:#1a1a1a;text-decoration:none;display:flex;align-items:center;gap:8px;">
+        <div style="width:32px;height:32px;background:#c9a84c;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">${initial}</div>
+        ${userName}
+      </a>`;
+    // Pre-fill userId if logged in
+    const userId = localStorage.getItem('userId') || localStorage.getItem('userEmail') || '';
+    if (userId) document.getElementById('fUserId').value = userId;
+  }
+
+  // ── NAV SCROLL SHADOW ────────────────────────────────────────────────────
+  window.addEventListener('scroll', () => {
+    document.querySelector('nav').style.boxShadow =
+      window.scrollY > 10 ? '0 2px 20px rgba(0,0,0,.08)' : 'none';
+  });
+
+  // ── INIT ──────────────────────────────────────────────────────────────────
+  loadFeedbacks();
+</script>
+</body>
+</html>
+
