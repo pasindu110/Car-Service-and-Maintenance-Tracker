@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4f46e5; /* Purple/Blue matching the progress bar */
+            --primary: #4f46e5;
+            /* Purple/Blue matching the progress bar */
             --primary-light: #e0e7ff;
             --dark: #1b1c21;
             --text-dark: #111827;
@@ -29,45 +31,218 @@
         body {
             background-color: var(--bg);
             color: var(--text-dark);
-            padding-top: 80px; /* offset for fixed nav */
+            padding-top: 80px;
+            /* offset for fixed nav */
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
 
         /* ── SHARED NAV (from index.html) ── */
-        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 18px 60px; background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(8px); border-bottom: 1px solid #f0f0f0; }
-        .nav-logo { font-size: 15px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; color: #1a1a1a; }
-        .nav-links { display: flex; gap: 32px; list-style: none; }
-        .nav-links a { font-size: 13px; color: #444; text-decoration: none; transition: color .2s; }
-        .nav-links a:hover { color: #1a1a1a; }
-        .nav-links a.active { color: #1a1a1a; font-weight: 600; border-bottom: 2px solid #c9a84c; padding-bottom: 2px; }
-        .nav-right-area { display: flex; align-items: center; gap: 16px; }
-        .btn-login { font-size: 13px; color: #444; text-decoration: none; }
-        .btn-book { background: #1a1a1a; color: #fff; font-size: 13px; padding: 10px 22px; border: none; cursor: pointer; letter-spacing: .5px; }
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 60px;
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .nav-logo {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: #1a1a1a;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 13px;
+            color: #444;
+            text-decoration: none;
+            transition: color .2s;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 600;
+            border-bottom: 2px solid #c9a84c;
+            padding-bottom: 2px;
+        }
+
+        .nav-right-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-login {
+            font-size: 13px;
+            color: #444;
+            text-decoration: none;
+        }
+
+        .btn-book {
+            background: #1a1a1a;
+            color: #fff;
+            font-size: 13px;
+            padding: 10px 22px;
+            border: none;
+            cursor: pointer;
+            letter-spacing: .5px;
+        }
 
         /* ── SHARED FOOTER (from index.html) ── */
-        .site-footer { background: #2c1a0e; color: #fff; padding: 60px; margin-top: auto; }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
-        .footer-logo-txt { font-size: 15px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
-        .footer-tagline { font-size: 13px; color: rgba(255, 255, 255, .5); line-height: 1.7; margin-bottom: 20px; }
-        .footer-col h4 { font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255, 255, 255, .5); margin-bottom: 16px; }
-        .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 10px; }
-        .footer-col ul li a { font-size: 13px; color: rgba(255, 255, 255, .7); text-decoration: none; transition: color .2s; }
-        .footer-col ul li a:hover { color: #c9a84c; }
-        .newsletter { display: flex; margin-top: 12px; }
-        .newsletter input { flex: 1; padding: 10px 14px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .2); color: #fff; font-size: 13px; outline: none; }
-        .newsletter input::placeholder { color: rgba(255, 255, 255, .4); }
-        .newsletter button { background: #c9a84c; border: none; padding: 10px 16px; cursor: pointer; color: #fff; }
-        .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, .1); }
-        .footer-bottom p { font-size: 12px; color: rgba(255, 255, 255, .4); }
-        .footer-links { display: flex; gap: 20px; }
-        .footer-links a { font-size: 12px; color: rgba(255, 255, 255, .4); text-decoration: none; }
-        .socials { display: flex; gap: 12px; }
-        .social-icon { width: 32px; height: 32px; border: 1px solid rgba(255, 255, 255, .2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: .2s; }
-        .social-icon:hover { border-color: #c9a84c; }
-        .social-icon svg { width: 14px; height: 14px; fill: rgba(255, 255, 255, .6); }
+        .site-footer {
+            background: #2c1a0e;
+            color: #fff;
+            padding: 60px;
+            margin-top: auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-logo-txt {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .footer-tagline {
+            font-size: 13px;
+            color: rgba(255, 255, 255, .5);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .footer-col h4 {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .5);
+            margin-bottom: 16px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col ul li a {
+            font-size: 13px;
+            color: rgba(255, 255, 255, .7);
+            text-decoration: none;
+            transition: color .2s;
+        }
+
+        .footer-col ul li a:hover {
+            color: #c9a84c;
+        }
+
+        .newsletter {
+            display: flex;
+            margin-top: 12px;
+        }
+
+        .newsletter input {
+            flex: 1;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .2);
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .newsletter input::placeholder {
+            color: rgba(255, 255, 255, .4);
+        }
+
+        .newsletter button {
+            background: #c9a84c;
+            border: none;
+            padding: 10px 16px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, .1);
+        }
+
+        .footer-bottom p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, .4);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            font-size: 12px;
+            color: rgba(255, 255, 255, .4);
+            text-decoration: none;
+        }
+
+        .socials {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-icon {
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(255, 255, 255, .2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .social-icon:hover {
+            border-color: #c9a84c;
+        }
+
+        .social-icon svg {
+            width: 14px;
+            height: 14px;
+            fill: rgba(255, 255, 255, .6);
+        }
 
         /* ── MAIN CONTENT ── */
         .container {
@@ -104,7 +279,11 @@
             color: var(--text-dark);
         }
 
-        .back-btn svg { width: 20px; height: 20px; fill: currentColor; }
+        .back-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
 
         .page-title {
             font-size: 24px;
@@ -213,7 +392,8 @@
         }
 
         .form-label span {
-            color: #ef4444; /* Red asterisk */
+            color: #ef4444;
+            /* Red asterisk */
             margin-left: 4px;
         }
 
@@ -260,7 +440,7 @@
             height: 100%;
             gap: 6px;
         }
-        
+
         .input-prefix select {
             appearance: none;
             background: transparent;
@@ -284,8 +464,12 @@
             display: flex;
             align-items: center;
         }
-        
-        .input-icon svg { width: 18px; height: 18px; fill: currentColor; }
+
+        .input-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
 
         /* Select Dropdown */
         .form-select {
@@ -312,7 +496,8 @@
             display: flex;
             align-items: center;
             gap: 20px;
-            height: 44px; /* Match input height */
+            height: 44px;
+            /* Match input height */
         }
 
         .radio-label {
@@ -416,6 +601,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- SHARED NAV -->
@@ -434,42 +620,40 @@
     </nav>
 
     <div class="container">
-        
+
         <div class="page-header">
             <a href="my-cars.html" class="back-btn">
-                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                </svg>
             </a>
             <h1 class="page-title">Add Vehicle</h1>
         </div>
 
-        <div class="progress-container">
-            <div class="progress-segment active"></div>
-            <div class="progress-segment"></div>
-            <div class="progress-segment"></div>
-        </div>
+        <!-- Progress bar removed as form is now single step -->
 
-        <form action="my-cars.html">
-            <!-- SECTION 1 -->
+        <form action="my-cars.html" id="addCarForm" method="POST">
             <div class="form-section active">
-                <div class="form-section-header">
-                    <div class="step-number">1</div>
+                <div class="form-section-header" style="cursor: default;">
                     <div class="section-title">Vehicle Details</div>
                 </div>
-                
-                <div class="form-content">
+
+                <div class="form-content" style="display: block;">
                     <div class="form-grid">
-                        
+
                         <div class="form-group">
                             <label class="form-label">Brand / Make <span>*</span></label>
                             <div class="form-input-container">
-                                <input type="text" class="form-input" placeholder="e.g. BMW, Toyota, Audi" required>
+                                <input type="text" name="make" class="form-input" placeholder="e.g. BMW, Toyota, Audi"
+                                    required>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">Model <span>*</span></label>
                             <div class="form-input-container">
-                                <input type="text" class="form-input" placeholder="e.g. M4 Coupe, Q3, Model S" required>
+                                <input type="text" name="model" class="form-input"
+                                    placeholder="e.g. M4 Coupe, Q3, Model S" required>
                             </div>
                         </div>
 
@@ -477,179 +661,74 @@
                             <label class="form-label">Year <span>*</span></label>
                             <div class="form-input-container">
                                 <div class="input-icon">
-                                    <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" />
+                                    </svg>
                                 </div>
-                                <input type="number" class="form-input" placeholder="YYYY" min="1900" max="2100" required>
+                                <input type="number" name="year" class="form-input" placeholder="YYYY" min="1900"
+                                    max="2100" required>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">License Plate <span>*</span></label>
                             <div class="form-input-container">
-                                <input type="text" class="form-input" placeholder="e.g. ABC-1234" required>
+                                <input type="text" name="license_plate" class="form-input" placeholder="e.g. ABC-1234"
+                                    required>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Transmission <span>*</span></label>
-                            <div class="radio-group">
-                                <label class="radio-label">
-                                    <input type="radio" name="transmission" class="radio-input" checked>
-                                    Automatic
-                                </label>
-                                <label class="radio-label">
-                                    <input type="radio" name="transmission" class="radio-input">
-                                    Manual
-                                </label>
-                                <label class="radio-label">
-                                    <input type="radio" name="transmission" class="radio-input">
-                                    Other
-                                </label>
+                            <label class="form-label">Color</label>
+                            <div class="form-input-container">
+                                <input type="text" name="color" class="form-input" placeholder="e.g. Black, White, Red">
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Fuel Type <span>*</span></label>
+                            <label class="form-label">Fuel Type</label>
                             <div class="radio-group">
                                 <label class="radio-label">
-                                    <input type="radio" name="fuel" class="radio-input" checked>
+                                    <input type="radio" name="fuel_type" value="Petrol" class="radio-input" checked>
                                     Petrol
                                 </label>
                                 <label class="radio-label">
-                                    <input type="radio" name="fuel" class="radio-input">
+                                    <input type="radio" name="fuel_type" value="Diesel" class="radio-input">
                                     Diesel
                                 </label>
                                 <label class="radio-label">
-                                    <input type="radio" name="fuel" class="radio-input">
+                                    <input type="radio" name="fuel_type" value="Electric" class="radio-input">
                                     Electric
                                 </label>
                                 <label class="radio-label">
-                                    <input type="radio" name="fuel" class="radio-input">
+                                    <input type="radio" name="fuel_type" value="Hybrid" class="radio-input">
                                     Hybrid
                                 </label>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">VIN (Vehicle Identification Number)</label>
-                            <div class="form-input-container">
-                                <input type="text" class="form-input" placeholder="17-character VIN">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
                             <label class="form-label">Mileage</label>
                             <div class="form-input-container">
-                                <input type="number" class="form-input" placeholder="e.g. 15000">
-                                <div class="input-prefix" style="border-right: none; border-left: 1px solid var(--border);">
+                                <input type="number" name="mileage" class="form-input" placeholder="e.g. 15000"
+                                    step="0.1" required>
+                                <div class="input-prefix"
+                                    style="border-right: none; border-left: 1px solid var(--border);">
                                     km
                                 </div>
                             </div>
                         </div>
 
                     </div>
-                    
+
                     <div class="form-actions">
-                        <button type="button" onclick="window.location.href='my-cars.html'" class="btn btn-outline">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="nextStep(1)">Next Step</button>
+                        <button type="button" onclick="window.location.href='my-cars.html'"
+                            class="btn btn-outline">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Vehicle</button>
                     </div>
                 </div>
             </div>
-
-            <!-- SECTION 2 -->
-            <div class="form-section">
-                <div class="form-section-header">
-                    <div class="step-number">2</div>
-                    <div class="section-title">Service & Registration Details</div>
-                </div>
-
-                <div class="form-content">
-                    <div class="form-grid">
-                        
-                        <div class="form-group">
-                            <label class="form-label">Registration Expiry Date</label>
-                            <div class="form-input-container">
-                                <div class="input-icon">
-                                    <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
-                                </div>
-                                <input type="date" class="form-input">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Insurance Provider</label>
-                            <div class="form-input-container">
-                                <input type="text" class="form-input" placeholder="e.g. Sri Lanka Insurance">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Insurance Expiry Date</label>
-                            <div class="form-input-container">
-                                <div class="input-icon">
-                                    <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
-                                </div>
-                                <input type="date" class="form-input">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Last Service Date</label>
-                            <div class="form-input-container">
-                                <div class="input-icon">
-                                    <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
-                                </div>
-                                <input type="date" class="form-input">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Last Service Mileage</label>
-                            <div class="form-input-container">
-                                <input type="number" class="form-input" placeholder="e.g. 10000">
-                                <div class="input-prefix" style="border-right: none; border-left: 1px solid var(--border);">
-                                    km
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Preferred Service Center</label>
-                            <div class="form-input-container">
-                                <input type="text" class="form-input" placeholder="e.g. AMW, Toyota Lanka">
-                            </div>
-                        </div>
-
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-outline" onclick="prevStep(1)">Back</button>
-                        <button type="button" class="btn btn-primary" onclick="nextStep(2)">Next Step</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECTION 3 -->
-            <div class="form-section">
-                <div class="form-section-header">
-                    <div class="step-number">3</div>
-                    <div class="section-title">Upload Documents & Images</div>
-                </div>
-                
-                <div class="form-content">
-                    <div class="upload-area">
-                        <svg viewBox="0 0 24 24" style="width: 48px; height: 48px; fill: var(--text-gray); margin-bottom: 16px;"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 8.11 4 4.95 7.03 4.8 10.89 4.3 11 3 11.23 3 12.5c0 1.25 1.15 1.48 1.8.19.06-.11.13-.23.2-.35V19h14v-6.66c.07.12.14.24.2.35.65 1.29 1.8 1.06 1.8-.19 0-1.27-1.3-1.5-1.8-.15zM14 13h-4v-4H8l4-4 4 4h-2v4z"/></svg>
-                        <p style="font-size: 14px; color: var(--text-dark); margin-bottom: 8px;"><strong>Click to upload</strong> or drag and drop</p>
-                        <p style="font-size: 12px; color: var(--text-gray);">Vehicle images, Registration book, or Insurance cards (SVG, PNG, JPG)</p>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-outline" onclick="prevStep(2)">Back</button>
-                        <button type="submit" class="btn btn-primary" style="background-color: var(--green);">Submit</button>
-                    </div>
-                </div>
-            </div>
-
         </form>
     </div>
 
@@ -661,7 +740,7 @@
                 <p class="footer-tagline">Professional car service and maintenance tracking for every vehicle owner.</p>
                 <p style="font-size:12px;color:rgba(255,255,255,.4);">info@cartracker.com</p>
                 <div class="newsletter" style="margin-top:16px;">
-                    <input type="email" placeholder="Your email address"/>
+                    <input type="email" placeholder="Your email address" />
                     <button>&rarr;</button>
                 </div>
             </div>
@@ -704,58 +783,42 @@
                 <a href="#">Accessibility</a>
             </div>
             <div class="socials">
-                <div class="social-icon"><svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></div>
-                <div class="social-icon"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg></div>
-                <div class="social-icon"><svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 22.43.36a9 9 0 0 1-2.88 1.1A4.52 4.52 0 0 0 16.11 0c-2.5 0-4.52 2-4.52 4.5 0 .35.04.7.11 1.03C7.69 5.34 4.07 3.58 1.64.9a4.5 4.5 0 0 0-.61 2.27c0 1.56.8 2.94 2 3.75A4.49 4.49 0 0 1 .96 6v.06c0 2.18 1.55 4 3.6 4.42a4.52 4.52 0 0 1-2.04.08 4.52 4.52 0 0 0 4.22 3.13A9.05 9.05 0 0 1 0 15.54 12.77 12.77 0 0 0 6.92 17.5c8.3 0 12.85-6.88 12.85-12.85 0-.2 0-.39-.01-.58A9.17 9.17 0 0 0 23 3z"/></svg></div>
+                <div class="social-icon"><svg viewBox="0 0 24 24">
+                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                    </svg></div>
+                <div class="social-icon"><svg viewBox="0 0 24 24">
+                        <rect x="2" y="2" width="20" height="20" rx="5" />
+                        <circle cx="12" cy="12" r="5" />
+                        <circle cx="17.5" cy="6.5" r="1.5" />
+                    </svg></div>
+                <div class="social-icon"><svg viewBox="0 0 24 24">
+                        <path
+                            d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 22.43.36a9 9 0 0 1-2.88 1.1A4.52 4.52 0 0 0 16.11 0c-2.5 0-4.52 2-4.52 4.5 0 .35.04.7.11 1.03C7.69 5.34 4.07 3.58 1.64.9a4.5 4.5 0 0 0-.61 2.27c0 1.56.8 2.94 2 3.75A4.49 4.49 0 0 1 .96 6v.06c0 2.18 1.55 4 3.6 4.42a4.52 4.52 0 0 1-2.04.08 4.52 4.52 0 0 0 4.22 3.13A9.05 9.05 0 0 1 0 15.54 12.77 12.77 0 0 0 6.92 17.5c8.3 0 12.85-6.88 12.85-12.85 0-.2 0-.39-.01-.58A9.17 9.17 0 0 0 23 3z" />
+                    </svg></div>
             </div>
         </div>
     </footer>
 
     <script>
-    // Nav shadow on scroll
-    window.addEventListener('scroll', () => {
-        document.getElementById('mainNav').style.boxShadow =
-            window.scrollY > 10 ? '0 2px 20px rgba(0,0,0,.08)' : 'none';
-    });
-    // Login state
-    const navRight = document.getElementById('navRight');
-    if (localStorage.getItem('userLoggedIn') === 'true') {
-        const userName = localStorage.getItem('userName') || 'User';
-        const initial = userName.charAt(0).toUpperCase();
-        navRight.innerHTML = `
+        // Nav shadow on scroll
+        window.addEventListener('scroll', () => {
+            document.getElementById('mainNav').style.boxShadow =
+                window.scrollY > 10 ? '0 2px 20px rgba(0,0,0,.08)' : 'none';
+        });
+        // Login state
+        const navRight = document.getElementById('navRight');
+        if (localStorage.getItem('userLoggedIn') === 'true') {
+            const userName = localStorage.getItem('userName') || 'User';
+            const initial = userName.charAt(0).toUpperCase();
+            navRight.innerHTML = `
             <a href="profile.html" style="font-size:13px;font-weight:600;color:#1a1a1a;text-decoration:none;display:flex;align-items:center;gap:8px;">
                 <div style="width:32px;height:32px;background:#c9a84c;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">${initial}</div>
                 ${userName}
             </a>`;
-    }
+        }
 
-    // Step navigation logic
-    function setStep(index) {
-        document.querySelectorAll('.form-section').forEach((sec, i) => {
-            if (i === index) sec.classList.add('active');
-            else sec.classList.remove('active');
-        });
-        
-        document.querySelectorAll('.progress-segment').forEach((seg, i) => {
-            if (i <= index) seg.classList.add('active');
-            else seg.classList.remove('active');
-        });
-    }
-
-    function nextStep(currentStepIndex) {
-        setStep(currentStepIndex);
-    }
-
-    function prevStep(currentStepIndex) {
-        setStep(currentStepIndex - 1);
-    }
-
-    // Click on headers to navigate
-    document.querySelectorAll('.form-section-header').forEach((header, index) => {
-        header.addEventListener('click', () => {
-            setStep(index);
-        });
-    });
+        // Form submission can be handled by backend or AJAX
     </script>
 </body>
+
 </html>
