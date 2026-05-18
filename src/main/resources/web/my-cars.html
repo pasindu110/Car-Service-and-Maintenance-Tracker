@@ -714,37 +714,81 @@
         const tagClass = fuelTagClass(v.fuelType);
         const icon     = fuelIcon(v.fuelType);
         const title    = `${v.year} ${v.make} ${v.model}`;
-        const sub      = v.color ? v.color : v.fuelType;
-        const mileage  = v.mileage ? `${v.mileage.toLocaleString()} km` : '—';
+        const mileage  = v.mileage ? `${Number(v.mileage).toLocaleString()} km` : '—';
         const plate    = v.licensePlate || '—';
 
         return `
-        <div class="car-card" style="cursor:pointer;">
-            <div class="car-header">
-                <div>
-                    <div class="car-title">${title}</div>
-                    <div class="car-type">${plate}</div>
+        <div class="car-card" id="card-${v.id}"
+             style="cursor:pointer;transition:transform .18s,box-shadow .18s;display:flex;flex-direction:column;"
+             onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 32px rgba(0,0,0,.12)'"
+             onmouseout="this.style.transform='';this.style.boxShadow=''">
+
+            <!-- Clickable area → car details -->
+            <div onclick="window.location.href='car-details.html?id=${v.id}'" style="flex:1;">
+                <div class="car-header">
+                    <div>
+                        <div class="car-title">${title}</div>
+                        <div class="car-type">${plate}</div>
+                    </div>
+                    <button class="bookmark-btn" onclick="event.stopPropagation()">
+                        <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                    </button>
                 </div>
-                <button class="bookmark-btn">
-                    <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                <div style="width:100%;height:110px;display:flex;align-items:center;justify-content:center;background:#f5f6f8;border-radius:8px;margin-bottom:14px;">
+                    <svg viewBox="0 0 64 32" style="width:100px;fill:#c0c4cc;">
+                        <rect x="4" y="14" width="56" height="12" rx="4"/>
+                        <rect x="12" y="6" width="34" height="12" rx="4"/>
+                        <circle cx="14" cy="26" r="5"/>
+                        <circle cx="50" cy="26" r="5"/>
+                    </svg>
+                </div>
+                <div class="car-footer" style="margin-bottom:14px;">
+                    <div class="car-tag ${tagClass}">${icon} ${v.fuelType || 'Petrol'}</div>
+                    <div style="font-size:13px;color:var(--text-gray);font-weight:500;">${mileage}</div>
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div style="display:flex;gap:8px;padding-top:12px;border-top:1px solid var(--border);" onclick="event.stopPropagation()">
+                <button onclick="window.location.href='update-car.html?id=${v.id}'"
+                        style="flex:1;padding:9px 0;font-size:12px;font-weight:600;border-radius:8px;border:1.5px solid #3b63f6;background:transparent;color:#3b63f6;cursor:pointer;transition:.2s;letter-spacing:.3px;"
+                        onmouseover="this.style.background='#3b63f6';this.style.color='#fff'"
+                        onmouseout="this.style.background='transparent';this.style.color='#3b63f6'">
+                    ✏ Update
+                </button>
+                <button onclick="deleteVehicle('${v.id}', '${title.replace("'","\\'")}')"
+                        style="flex:1;padding:9px 0;font-size:12px;font-weight:600;border-radius:8px;border:1.5px solid #ef4444;background:transparent;color:#ef4444;cursor:pointer;transition:.2s;letter-spacing:.3px;"
+                        onmouseover="this.style.background='#ef4444';this.style.color='#fff'"
+                        onmouseout="this.style.background='transparent';this.style.color='#ef4444'">
+                    🗑 Delete
                 </button>
             </div>
-            <div style="width:100%;height:130px;display:flex;align-items:center;justify-content:center;background:#f5f6f8;border-radius:8px;margin-bottom:20px;">
-                <svg viewBox="0 0 64 32" style="width:110px;fill:#c0c4cc;">
-                    <rect x="4" y="14" width="56" height="12" rx="4"/>
-                    <rect x="12" y="6" width="34" height="12" rx="4"/>
-                    <circle cx="14" cy="26" r="5"/>
-                    <circle cx="50" cy="26" r="5"/>
-                </svg>
-            </div>
-            <div class="car-footer">
-                <div class="car-tag ${tagClass}">
-                    ${icon}
-                    ${v.fuelType || 'Petrol'}
-                </div>
-                <div style="font-size:13px;color:var(--text-gray);font-weight:500;">${mileage}</div>
-            </div>
         </div>`;
+    }
+
+    // ── Delete vehicle ──────────────────────────────────────────────────────────
+    async function deleteVehicle(id, name) {
+        if (!confirm(`Delete "${name}"?\nThis action cannot be undone.`)) return;
+        try {
+            const res  = await fetch('/api/vehicles?id=' + encodeURIComponent(id), { method: 'DELETE' });
+            const json = await res.json();
+            if (json.success) {
+                const card = document.getElementById('card-' + id);
+                if (card) card.remove();
+                // Show empty state if no cards left
+                const grid = document.getElementById('carGrid');
+                if (!grid.querySelector('.car-card')) {
+                    grid.innerHTML = `<div style="grid-column:1/-1;padding:64px 24px;text-align:center;">
+                        <p style="font-size:16px;font-weight:600;color:var(--text-dark);margin-bottom:8px;">No vehicles yet</p>
+                        <button onclick="window.location.href='add-car.html'" style="background:var(--primary);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">+ Add Vehicle</button>
+                    </div>`;
+                }
+            } else {
+                alert('Error: ' + json.message);
+            }
+        } catch (err) {
+            alert('Failed to delete. Make sure server is running.');
+        }
     }
 
     // ── Load vehicles from backend ─────────────────────────────────────────────

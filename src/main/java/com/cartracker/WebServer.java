@@ -136,6 +136,29 @@ public class WebServer {
             String method = exchange.getRequestMethod();
 
             if ("GET".equals(method)) {
+                // Check for ?id= to return a single vehicle
+                String query = exchange.getRequestURI().getQuery();
+                String idParam = null;
+                if (query != null) {
+                    for (String p : query.split("&")) {
+                        String[] kv = p.split("=", 2);
+                        if (kv.length == 2 && kv[0].equals("id")) {
+                            idParam = java.net.URLDecoder.decode(kv[1], "UTF-8");
+                        }
+                    }
+                }
+
+                if (idParam != null && !idParam.isEmpty()) {
+                    // Return single vehicle by id
+                    java.util.Optional<Vehicle> vOpt = vehicleService.findById(idParam);
+                    if (vOpt.isPresent()) {
+                        sendJson(exchange, 200, vehicleToJson(vOpt.get()));
+                    } else {
+                        sendJson(exchange, 404, "{\"success\":false,\"message\":\"Vehicle not found\"}");
+                    }
+                    return;
+                }
+
                 // Return all vehicles as JSON array
                 List<Vehicle> vehicles = vehicleService.findAll();
                 StringBuilder sb = new StringBuilder("[");
@@ -202,6 +225,74 @@ public class WebServer {
                 } catch (Exception e) {
                     sendJson(exchange, 400,
                         "{\"success\":false,\"message\":\"" + esc(e.getMessage()) + "\"}");
+                }
+
+            } else if ("PUT".equals(method)) {
+                // ── Update vehicle ─────────────────────────────────────────────
+                String query = exchange.getRequestURI().getQuery();
+                String vehicleId = null;
+                if (query != null) {
+                    for (String p : query.split("&")) {
+                        String[] kv = p.split("=", 2);
+                        if (kv.length == 2 && kv[0].equals("id"))
+                            vehicleId = java.net.URLDecoder.decode(kv[1], "UTF-8");
+                    }
+                }
+                if (vehicleId == null || vehicleId.isEmpty()) {
+                    sendJson(exchange, 400, "{\"success\":false,\"message\":\"Vehicle id required\"}");
+                    return;
+                }
+
+                java.util.Optional<Vehicle> existing = vehicleService.findById(vehicleId);
+                if (!existing.isPresent()) {
+                    sendJson(exchange, 404, "{\"success\":false,\"message\":\"Vehicle not found\"}");
+                    return;
+                }
+
+                String body = new String(exchange.getRequestBody().readAllBytes(), "UTF-8");
+                Vehicle v = existing.get();
+                for (String pair : body.split("&")) {
+                    String[] kv = pair.split("=", 2);
+                    if (kv.length < 2) continue;
+                    String key = kv[0];
+                    String val = java.net.URLDecoder.decode(kv[1], "UTF-8");
+                    switch (key) {
+                        case "make":          v.setMake(val); break;
+                        case "model":         v.setModel(val); break;
+                        case "year":          try { v.setYear(Integer.parseInt(val)); } catch (NumberFormatException ignored) {} break;
+                        case "license_plate": v.setLicensePlate(val); break;
+                        case "color":         v.setColor(val); break;
+                        case "fuel_type":     v.setFuelType(val); break;
+                        case "mileage":       try { v.setMileage(Double.parseDouble(val)); } catch (NumberFormatException ignored) {} break;
+                    }
+                }
+                try {
+                    Vehicle updated = vehicleService.update(v);
+                    sendJson(exchange, 200, "{\"success\":true,\"message\":\"Vehicle updated!\",\"vehicle\":" + vehicleToJson(updated) + "}");
+                } catch (Exception e) {
+                    sendJson(exchange, 400, "{\"success\":false,\"message\":\"" + esc(e.getMessage()) + "\"}");
+                }
+
+            } else if ("DELETE".equals(method)) {
+                // ── Delete vehicle ─────────────────────────────────────────────
+                String query = exchange.getRequestURI().getQuery();
+                String vehicleId = null;
+                if (query != null) {
+                    for (String p : query.split("&")) {
+                        String[] kv = p.split("=", 2);
+                        if (kv.length == 2 && kv[0].equals("id"))
+                            vehicleId = java.net.URLDecoder.decode(kv[1], "UTF-8");
+                    }
+                }
+                if (vehicleId == null || vehicleId.isEmpty()) {
+                    sendJson(exchange, 400, "{\"success\":false,\"message\":\"Vehicle id required\"}");
+                    return;
+                }
+                boolean removed = vehicleService.remove(vehicleId);
+                if (removed) {
+                    sendJson(exchange, 200, "{\"success\":true,\"message\":\"Vehicle deleted\"}");
+                } else {
+                    sendJson(exchange, 404, "{\"success\":false,\"message\":\"Vehicle not found\"}");
                 }
 
             } else {

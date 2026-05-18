@@ -779,6 +779,78 @@
                 ${userName}
             </a>`;
     }
+
+    // ── Load vehicle details from backend ──────────────────────────────────────
+    async function loadVehicle() {
+        // Read ?id= from URL
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        if (!id) {
+            document.querySelector('.hero').innerHTML =
+                '<p style="padding:40px;color:red;">No vehicle ID provided. <a href="my-cars.html">Go back</a></p>';
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/vehicles?id=' + encodeURIComponent(id));
+            if (!res.ok) throw new Error('Vehicle not found');
+            const v = await res.json();
+            populatePage(v);
+        } catch (err) {
+            document.querySelector('.hero').innerHTML =
+                `<p style="padding:40px;color:red;">Could not load vehicle details. <a href="my-cars.html">Go back</a></p>`;
+        }
+    }
+
+    function populatePage(v) {
+        const title = `${v.make} ${v.model}`;
+
+        // Page title
+        document.title = `${title} – CarTracker`;
+
+        // Hero section
+        document.querySelector('.year').textContent = v.year || '—';
+        document.querySelector('.car-title').textContent = title.toUpperCase();
+
+        // Description (generated from data)
+        document.querySelector('.description').textContent =
+            `${v.year} ${v.make} ${v.model} — ${v.fuelType || 'Petrol'} powered vehicle. ` +
+            `License plate: ${v.licensePlate || '—'}. Color: ${v.color || 'Not specified'}.`;
+
+        // Color dot
+        const colorDot = document.querySelector('.color-dot');
+        if (colorDot && v.color) {
+            const colorMap = {
+                white:'#ffffff', black:'#111827', silver:'#d1d5db', gray:'#6b7280',
+                grey:'#6b7280', red:'#dc2626', blue:'#2563eb', green:'#16a34a',
+                yellow:'#facc15', orange:'#f97316', brown:'#92400e', beige:'#d4b896',
+                purple:'#7c3aed', gold:'#b45309'
+            };
+            const key = (v.color || '').toLowerCase();
+            colorDot.style.background = colorMap[key] || '#9ca3af';
+            colorDot.nextElementSibling.textContent = v.color;
+        }
+
+        // Quick stats
+        const statVals = document.querySelectorAll('.stat-val');
+        if (statVals[0]) statVals[0].textContent = v.mileage ? `${Number(v.mileage).toLocaleString()} km` : '—';
+        if (statVals[1]) statVals[1].textContent = v.fuelType || 'Petrol';
+
+        // Specs grid (Make, Fuel Type, Miles, License Plate, Color, Year)
+        const specVals = document.querySelectorAll('.spec-val');
+        if (specVals[0]) specVals[0].textContent = v.make   || '—';
+        if (specVals[1]) specVals[1].textContent = v.fuelType || '—';
+        if (specVals[2]) specVals[2].textContent = v.mileage ? `${Number(v.mileage).toLocaleString()} km` : '—';
+        if (specVals[3]) specVals[3].textContent = v.licensePlate || '—';
+        if (specVals[4]) specVals[4].textContent = v.color  || '—';
+        if (specVals[5]) specVals[5].textContent = v.model  || '—';
+
+        // Hide price section (not relevant for service tracker)
+        const prices = document.querySelector('.prices');
+        if (prices) prices.style.display = 'none';
+    }
+
+    loadVehicle();
     </script>
 </body>
 </html>
