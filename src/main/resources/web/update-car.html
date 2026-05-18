@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Vehicle – CarTracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b63f6;
+            --primary-dark: #2d4fd1;
+            --dark: #1b1c21;
+            --text-dark: #1f2126;
+            --text-gray: #7a808a;
+            --bg: #f5f6f8;
+            --border: #e6e8ec;
+            --white: #ffffff;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text-dark); padding-top: 80px; }
+
+        /* NAV */
+        nav { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 60px;background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1px solid #f0f0f0; }
+        .nav-logo { font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;color:#1a1a1a; }
+        .nav-links { display:flex;gap:32px;list-style:none; }
+        .nav-links a { font-size:13px;color:#444;text-decoration:none;transition:color .2s; }
+        .nav-links a:hover { color:#1a1a1a; }
+        .nav-links a.active { color:#1a1a1a;font-weight:600;border-bottom:2px solid #c9a84c;padding-bottom:2px; }
+        .nav-right-area { display:flex;align-items:center;gap:16px; }
+        .btn-login { font-size:13px;color:#444;text-decoration:none; }
+        .btn-book { background:#1a1a1a;color:#fff;font-size:13px;padding:10px 22px;border:none;cursor:pointer;letter-spacing:.5px; }
+
+        /* CONTAINER */
+        .container {
+            max-width: 720px;
+            margin: 48px auto;
+            padding: 0 24px 60px;
+        }
+
+        /* PAGE HEADER */
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+        .back-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            text-decoration: none;
+            color: var(--text-gray);
+            flex-shrink: 0;
+            transition: .2s;
+        }
+        .back-btn:hover { background: var(--border); color: var(--text-dark); }
+        .back-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        .page-title { font-size: 24px; font-weight: 700; color: var(--text-dark); }
+
+        /* FORM CARD */
+        .form-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full { grid-column: 1 / -1; }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+        .form-label span { color: var(--danger); margin-left: 2px; }
+
+        .form-input, .form-select {
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background: var(--white);
+            transition: border-color .2s, box-shadow .2s;
+            outline: none;
+            width: 100%;
+        }
+        .form-input:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59,99,246,0.12);
+        }
+
+        /* ACTIONS */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+        .btn-primary {
+            flex: 1;
+            padding: 14px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s, transform .1s;
+            letter-spacing: .3px;
+        }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-primary:active { transform: scale(.98); }
+        .btn-cancel {
+            padding: 14px 28px;
+            background: transparent;
+            color: var(--text-gray);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .btn-cancel:hover { background: var(--bg); color: var(--text-dark); }
+
+        /* Loading overlay */
+        #loadingOverlay {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s;
+            z-index: 9999;
+        }
+        #toast.show { opacity: 1; }
+        #toast.success { background: #16a34a; }
+        #toast.error   { background: var(--danger); }
+    </style>
+</head>
+<body>
+
+    <!-- NAV -->
+    <nav id="mainNav">
+        <a class="nav-logo" href="index.html">CarTracker</a>
+        <ul class="nav-links">
+            <li><a href="index.html#services">Services</a></li>
+            <li><a href="my-cars.html" class="active">My Cars</a></li>
+            <li><a href="index.html#appointments">Appointments</a></li>
+            <li><a href="index.html#reports">Reports</a></li>
+        </ul>
+        <div class="nav-right-area" id="navRight">
+            <a class="btn-login" href="login.html">Log in</a>
+            <button class="btn-book">Book Service</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <a href="my-cars.html" class="back-btn">
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </a>
+            <h1 class="page-title">Update Vehicle</h1>
+        </div>
+
+        <div class="form-card">
+            <div id="loadingOverlay">Loading vehicle details...</div>
+
+            <form id="updateForm" style="display:none;" onsubmit="submitUpdate(event)">
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label class="form-label">Brand / Make <span>*</span></label>
+                        <input type="text" id="make" name="make" class="form-input"
+                               placeholder="e.g. Toyota, BMW" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Model <span>*</span></label>
+                        <input type="text" id="model" name="model" class="form-input"
+                               placeholder="e.g. Corolla, X5" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Year <span>*</span></label>
+                        <input type="number" id="year" name="year" class="form-input"
+                               placeholder="e.g. 2021" min="1900" max="2030" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">License Plate <span>*</span></label>
+                        <input type="text" id="license_plate" name="license_plate" class="form-input"
+                               placeholder="e.g. ABC-1234" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Color</label>
+                        <input type="text" id="color" name="color" class="form-input"
+                               placeholder="e.g. White, Black, Silver">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Fuel Type</label>
+                        <select id="fuel_type" name="fuel_type" class="form-select">
+                            <option value="Petrol">Petrol</option>
+                            <option value="Diesel">Diesel</option>
+                            <option value="Electric">Electric</option>
+                            <option value="Hybrid">Hybrid</option>
+                            <option value="CNG">CNG</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full">
+                        <label class="form-label">Current Mileage (km)</label>
+                        <input type="number" id="mileage" name="mileage" class="form-input"
+                               placeholder="e.g. 15000" min="0" step="1">
+                    </div>
+
+                </div><!-- /form-grid -->
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="window.location.href='my-cars.html'">Cancel</button>
+                    <button type="submit" class="btn-primary" id="submitBtn">💾 Save Changes</button>
+                </div>
+            </form>
+        </div><!-- /form-card -->
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast"></div>
+
+    <script>
+    // Nav shadow + login state
+    window.addEventListener('scroll', () => {
+        document.getElementById('mainNav').style.boxShadow =
+            window.scrollY > 10 ? '0 2px 20px rgba(0,0,0,.08)' : 'none';
+    });
+    const navRight = document.getElementById('navRight');
+    if (localStorage.getItem('userLoggedIn') === 'true') {
+        const userName = localStorage.getItem('userName') || 'User';
+        const initial = userName.charAt(0).toUpperCase();
+        navRight.innerHTML = `
+            <a href="profile.html" style="font-size:13px;font-weight:600;color:#1a1a1a;text-decoration:none;display:flex;align-items:center;gap:8px;">
+                <div style="width:32px;height:32px;background:#c9a84c;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">${initial}</div>
+                ${userName}
+            </a>`;
+    }
+
+    // ── Read vehicle id from URL ───────────────────────────────────────────────
+    const vehicleId = new URLSearchParams(window.location.search).get('id');
+
+    if (!vehicleId) {
+        document.getElementById('loadingOverlay').textContent = 'No vehicle ID provided.';
+    } else {
+        loadVehicle();
+    }
+
+    // ── Fetch vehicle and pre-fill form ───────────────────────────────────────
+    async function loadVehicle() {
+        try {
+            const res = await fetch('/api/vehicles?id=' + encodeURIComponent(vehicleId));
+            if (!res.ok) throw new Error('Not found');
+            const v = await res.json();
+
+            // Pre-fill inputs
+            document.getElementById('make').value          = v.make          || '';
+            document.getElementById('model').value         = v.model         || '';
+            document.getElementById('year').value          = v.year          || '';
+            document.getElementById('license_plate').value = v.licensePlate  || '';
+            document.getElementById('color').value         = v.color         || '';
+            document.getElementById('mileage').value       = v.mileage       || '';
+
+            // Select matching fuel type
+            const sel = document.getElementById('fuel_type');
+            for (let opt of sel.options) {
+                if (opt.value.toLowerCase() === (v.fuelType || '').toLowerCase()) {
+                    opt.selected = true;
+                    break;
+                }
+            }
+
+            // Show form, hide loader
+            document.getElementById('loadingOverlay').style.display = 'none';
+            document.getElementById('updateForm').style.display = 'block';
+
+            document.title = `Update ${v.make} ${v.model} – CarTracker`;
+
+        } catch (err) {
+            document.getElementById('loadingOverlay').textContent =
+                'Could not load vehicle. Make sure the server is running.';
+        }
+    }
+
+    // ── Submit update ─────────────────────────────────────────────────────────
+    async function submitUpdate(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+
+        const form = document.getElementById('updateForm');
+        const data = new URLSearchParams(new FormData(form));
+
+        try {
+            const res  = await fetch('/api/vehicles?id=' + encodeURIComponent(vehicleId), {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: data.toString()
+            });
+            const json = await res.json();
+
+            if (json.success) {
+                showToast('Vehicle updated successfully! ✅', 'success');
+                setTimeout(() => window.location.href = 'my-cars.html', 1400);
+            } else {
+                showToast('Error: ' + json.message, 'error');
+                btn.disabled = false;
+                btn.textContent = '💾 Save Changes';
+            }
+        } catch (err) {
+            showToast('Failed to connect to server.', 'error');
+            btn.disabled = false;
+            btn.textContent = '💾 Save Changes';
+        }
+    }
+
+    // ── Toast helper ─────────────────────────────────────────────────────────
+    function showToast(msg, type) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'show ' + type;
+        setTimeout(() => { t.className = ''; }, 2800);
+    }
+    </script>
+</body>
+</html>

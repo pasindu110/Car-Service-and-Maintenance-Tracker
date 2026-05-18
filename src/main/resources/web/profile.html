@@ -1,136 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>User Profile – CarTracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-    background: #f6f5f7;
-    font-family: 'Inter', sans-serif;
-    color: #333;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile – CarTracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary:   #3b63f6;
+            --text-dark: #1f2126;
+            --text-gray: #7a808a;
+            --bg:        #f5f6f8;
+            --border:    #e6e8ec;
+            --white:     #ffffff;
+            --gold:      #c9a84c;
+        }
 
-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 60px;
-    background: #fff;
-    border-bottom: 1px solid #f0f0f0;
-}
-.nav-logo { font-size: 15px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #1a1a1a; text-decoration: none; }
-.back-link { font-size: 14px; font-weight: 600; color: #512da8; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+        body { background:var(--bg); color:var(--text-dark); padding-top:80px; min-height:100vh; }
 
-.profile-container {
-    max-width: 600px;
-    margin: 60px auto;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-    padding: 40px;
-    text-align: center;
-}
+        /* ── NAV ── */
+        nav { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 60px;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid #f0f0f0; }
+        .nav-logo { font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;color:#1a1a1a; }
+        .nav-links { display:flex;gap:32px;list-style:none; }
+        .nav-links a { font-size:13px;color:#444;text-decoration:none;transition:color .2s; }
+        .nav-links a:hover { color:#1a1a1a; }
+        .nav-right-area { display:flex;align-items:center;gap:16px; }
 
-.avatar {
-    width: 100px;
-    height: 100px;
-    background: linear-gradient(to right, #673ab7, #512da8);
-    color: #fff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    font-weight: 700;
-    margin: 0 auto 20px;
-}
+        /* ── PAGE ── */
+        .container { max-width:640px;margin:48px auto;padding:0 24px 80px; }
 
-h1 { font-size: 24px; margin-bottom: 5px; }
-p.email { color: #888; font-size: 14px; margin-bottom: 30px; }
+        /* ── PROFILE CARD ── */
+        .profile-card { background:var(--white);border-radius:20px;box-shadow:0 4px 24px rgba(0,0,0,.07);overflow:hidden; }
 
-.info-box {
-    background: #f8f8f6;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: left;
-    margin-bottom: 30px;
-}
-.info-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
-}
-.info-row:last-child { border-bottom: none; }
-.info-label { font-size: 13px; color: #666; font-weight: 500; }
-.info-value { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+        .card-banner { height:90px;background:linear-gradient(135deg,#1f2126 0%,#3b63f6 100%); }
 
-.btn-logout {
-    background: #e74c3c;
-    color: #fff;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: 0.2s;
-}
-.btn-logout:hover { background: #c0392b; }
-</style>
+        .avatar-wrap { display:flex;justify-content:space-between;align-items:flex-end;padding:0 32px;margin-top:-44px;margin-bottom:16px; }
+        .avatar { width:80px;height:80px;border-radius:50%;background:var(--gold);color:#fff;font-size:30px;font-weight:700;display:flex;align-items:center;justify-content:center;border:4px solid var(--white);box-shadow:0 4px 16px rgba(0,0,0,.15);flex-shrink:0; }
+
+        .card-body { padding:0 32px 28px; }
+        .user-name { font-size:20px;font-weight:700;margin-bottom:3px; }
+        .user-email { font-size:13px;color:var(--text-gray);margin-bottom:24px; }
+
+        /* Info rows */
+        .section-label { font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text-gray);margin-bottom:10px; }
+        .info-row { display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border); }
+        .info-row:last-child { border-bottom:none; }
+        .info-icon { width:34px;height:34px;background:var(--bg);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+        .info-icon svg { width:16px;height:16px;fill:var(--text-gray); }
+        .info-key { font-size:11px;color:var(--text-gray);margin-bottom:1px; }
+        .info-val { font-size:14px;font-weight:600; }
+
+        /* Action links */
+        .card-actions { padding:0 32px 32px;display:flex;flex-direction:column;gap:8px; }
+        .action-row { display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;transition:.2s;text-decoration:none;color:var(--text-dark); }
+        .action-row:hover { background:var(--bg); }
+        .action-row.danger { border-color:#fecaca;color:#dc2626; }
+        .action-row.danger:hover { background:#fef2f2; }
+        .action-icon { width:34px;height:34px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+        .action-icon svg { width:16px;height:16px;fill:var(--text-gray); }
+        .action-row.danger .action-icon { background:#fef2f2; }
+        .action-row.danger .action-icon svg { fill:#dc2626; }
+        .action-label { font-size:14px;font-weight:600;flex:1; }
+        .chevron svg { width:15px;height:15px;fill:#d1d5db; }
+    </style>
 </head>
 <body>
 
-<nav>
-    <a href="index.html" class="nav-logo">CarTracker</a>
-    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Home</a>
-</nav>
+    <nav id="mainNav">
+        <a class="nav-logo" href="index.html">CarTracker</a>
+        <ul class="nav-links">
+            <li><a href="index.html#services">Services</a></li>
+            <li><a href="my-cars.html">My Cars</a></li>
+            <li><a href="index.html#appointments">Appointments</a></li>
+        </ul>
+        <div class="nav-right-area" id="navRight"></div>
+    </nav>
 
-<div class="profile-container">
-    <div class="avatar" id="avatarInitial">U</div>
-    <h1 id="profileName">Loading...</h1>
-    <p class="email" id="profileEmail">Loading...</p>
+    <div class="container">
+        <div class="profile-card">
 
-    <div class="info-box">
-        <div class="info-row">
-            <span class="info-label">Account Status</span>
-            <span class="info-value" style="color:#2ecc71;">Active</span>
-        </div>
-        <div class="info-row">
-            <span class="info-label">Registered Vehicles</span>
-            <span class="info-value">0 (Feature coming soon)</span>
-        </div>
-        <div class="info-row">
-            <span class="info-label">Member Since</span>
-            <span class="info-value">Just now</span>
+            <div class="card-banner"></div>
+
+            <div class="avatar-wrap">
+                <div class="avatar" id="avatar">U</div>
+            </div>
+
+            <div class="card-body">
+                <div class="user-name" id="userName">Loading...</div>
+                <div class="user-email" id="userEmail">—</div>
+
+                <div class="section-label">Account Info</div>
+
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                    </div>
+                    <div>
+                        <div class="info-key">Full Name</div>
+                        <div class="info-val" id="infoName">—</div>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    </div>
+                    <div>
+                        <div class="info-key">Email</div>
+                        <div class="info-val" id="infoEmail">—</div>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z"/></svg>
+                    </div>
+                    <div>
+                        <div class="info-key">Registered Vehicles</div>
+                        <div class="info-val" id="infoVehicles">Loading...</div>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+                    </div>
+                    <div>
+                        <div class="info-key">Account Status</div>
+                        <div class="info-val" style="color:#16a34a;">Active</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-actions">
+                <a href="my-cars.html" class="action-row">
+                    <div class="action-icon">
+                        <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z"/></svg>
+                    </div>
+                    <span class="action-label">My Cars</span>
+                    <span class="chevron"><svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span>
+                </a>
+
+                <a href="add-car.html" class="action-row">
+                    <div class="action-icon">
+                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    </div>
+                    <span class="action-label">Add New Vehicle</span>
+                    <span class="chevron"><svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span>
+                </a>
+
+                <div class="action-row danger" onclick="logout()">
+                    <div class="action-icon">
+                        <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                    </div>
+                    <span class="action-label">Log Out</span>
+                    <span class="chevron"><svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <button class="btn-logout" id="logoutBtn">Logout</button>
-</div>
-
-<script>
+    <script>
+    // Redirect if not logged in
     if (localStorage.getItem('userLoggedIn') !== 'true') {
-        window.location.href = "login.html"; // Redirect if not logged in
+        window.location.href = 'login.html';
     }
 
-    const userName = localStorage.getItem('userName') || 'User';
-    const userEmail = localStorage.getItem('userEmail') || 'No Email';
-    
-    document.getElementById('profileName').textContent = userName;
-    document.getElementById('profileEmail').textContent = userEmail;
-    document.getElementById('avatarInitial').textContent = userName.charAt(0).toUpperCase();
-
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        localStorage.clear();
-        window.location.href = "index.html";
+    // Nav shadow
+    window.addEventListener('scroll', () => {
+        document.getElementById('mainNav').style.boxShadow =
+            window.scrollY > 10 ? '0 2px 20px rgba(0,0,0,.08)' : 'none';
     });
-</script>
+
+    // Populate from localStorage
+    const name  = localStorage.getItem('userName')  || 'User';
+    const email = localStorage.getItem('userEmail') || '—';
+    const initial = name.charAt(0).toUpperCase();
+
+    document.getElementById('avatar').textContent    = initial;
+    document.getElementById('userName').textContent  = name;
+    document.getElementById('userEmail').textContent = email;
+    document.getElementById('infoName').textContent  = name;
+    document.getElementById('infoEmail').textContent = email;
+
+    // Nav badge
+    document.getElementById('navRight').innerHTML = `
+        <a href="profile.html" style="font-size:13px;font-weight:600;color:#1a1a1a;text-decoration:none;display:flex;align-items:center;gap:8px;">
+            <div style="width:32px;height:32px;background:#c9a84c;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">${initial}</div>
+            ${name}
+        </a>`;
+
+    // Live vehicle count
+    (async () => {
+        try {
+            const res = await fetch('/api/vehicles');
+            const arr = await res.json();
+            document.getElementById('infoVehicles').textContent =
+                `${arr.length} vehicle${arr.length !== 1 ? 's' : ''}`;
+        } catch (_) {
+            document.getElementById('infoVehicles').textContent = '—';
+        }
+    })();
+
+    // Logout
+    function logout() {
+        if (!confirm('Are you sure you want to log out?')) return;
+        localStorage.clear();
+        window.location.href = 'login.html';
+    }
+    </script>
 </body>
 </html>
