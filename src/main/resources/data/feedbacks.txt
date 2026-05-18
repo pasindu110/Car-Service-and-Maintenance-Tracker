@@ -1,4 +1,4 @@
-# Feedback data file
-# Format: id|customerId|serviceRecordId|rating|comment|createdAt
-# Example row (do not include this comment in real data lines):
-# FB001|CUST001|SR001|5|Great service, very professional!|2025-04-17T10:30:00
+# feedbacks.txt – flat-file storage for Feedback records
+# Format: feedbackId|userId|serviceId|rating|comment|createdAt|updatedAt
+# One record per line. Lines starting with # are ignored by parseLine().
+# Leave this file empty (or with only comments) for a fresh start.
