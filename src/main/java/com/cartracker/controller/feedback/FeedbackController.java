@@ -1,6 +1,6 @@
 package com.cartracker.controller.feedback;
 
-import com.cartracker.dto.SubmitFeedbackRequest;
+import com.cartracker.dto.FeedbackRequest;
 import com.cartracker.model.feedback.Feedback;
 import com.cartracker.service.feedback.FeedbackService;
 
@@ -8,15 +8,27 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * FeedbackController – entry point for all User Feedback operations.
+ * FeedbackController – entry point for all Feedback CRUD operations.
  *
- * Demonstrates SEPARATION OF CONCERNS: the controller only delegates to the
- * service; it does NOT contain business logic or data access code.
+ * Demonstrates SEPARATION OF CONCERNS:
+ *   • The controller ONLY delegates to the service layer.
+ *   • It contains NO business logic and NO data-access code.
  *
- * In a CLI application, call these methods from your main menu/UI class.
- * In a web application, map HTTP requests to these methods.
+ * Exposed operations (maps to CRUD):
+ *   createFeedback()   → POST   /api/feedback
+ *   getFeedback()      → GET    /api/feedback/{id}
+ *   getAllFeedbacks()   → GET    /api/feedback
+ *   updateFeedback()   → PUT    /api/feedback/{id}
+ *   deleteFeedback()   → DELETE /api/feedback/{id}
  *
- * Team member: assign to the Feedback module owner.
+ * Cross-module queries:
+ *   getFeedbackByUser()    → GET /api/feedback/user/{userId}
+ *   getFeedbackByService() → GET /api/feedback/service/{serviceId}
+ *   getAverageRating()     → GET /api/feedback/service/{serviceId}/average
+ *
+ * In a CLI application, call these methods directly from your main menu.
+ * In a web application, wire the HTTP handler to these methods
+ * (see FeedbackHttpHandler for the built-in HttpServer integration).
  */
 public class FeedbackController {
 
@@ -28,101 +40,132 @@ public class FeedbackController {
         this.feedbackService = feedbackService;
     }
 
-    // ── Submit Feedback ───────────────────────────────────────────────────────
+    // ── createFeedback ────────────────────────────────────────────────────────
 
     /**
-     * POST /feedback  (or menu option: "Submit Feedback")
+     * POST /api/feedback
      *
-     * Accepts a SubmitFeedbackRequest DTO, delegates to service, and returns
-     * the created Feedback entity.
+     * Accepts a FeedbackRequest DTO, delegates to the service, and returns
+     * the newly created Feedback entity.
+     *
+     * @param request DTO containing userId, serviceId, rating, comment
+     * @return created Feedback entity
      */
-    public Feedback submitFeedback(SubmitFeedbackRequest request) {
-        System.out.println("[FeedbackController] Submitting feedback from customer: "
-                + request.getCustomerId());
+    public Feedback createFeedback(FeedbackRequest request) {
+        System.out.println("[FeedbackController] createFeedback – userId=" + request.getUserId()
+                + ", serviceId=" + request.getServiceId()
+                + ", rating="   + request.getRating());
 
-        return feedbackService.submit(
-                request.getCustomerId(),
-                request.getServiceRecordId(),
+        return feedbackService.createFeedback(
+                request.getUserId(),
+                request.getServiceId(),
                 request.getRating(),
                 request.getComment()
         );
     }
 
-    // ── Get Feedback by ID ────────────────────────────────────────────────────
+    // ── getFeedback ───────────────────────────────────────────────────────────
 
     /**
-     * GET /feedback/{id}
-     */
-    public Optional<Feedback> getFeedbackById(String feedbackId) {
-        System.out.println("[FeedbackController] Looking up feedback: " + feedbackId);
-        return feedbackService.findById(feedbackId);
-    }
-
-    // ── Get All Feedback by Customer ──────────────────────────────────────────
-
-    /**
-     * GET /feedback/customer/{customerId}
-     */
-    public List<Feedback> getFeedbackByCustomer(String customerId) {
-        System.out.println("[FeedbackController] Fetching all feedback for customer: " + customerId);
-        return feedbackService.findByCustomer(customerId);
-    }
-
-    // ── Get All Feedback for a Service Record ─────────────────────────────────
-
-    /**
-     * GET /feedback/service-record/{serviceRecordId}
-     */
-    public List<Feedback> getFeedbackForServiceRecord(String serviceRecordId) {
-        System.out.println("[FeedbackController] Fetching feedback for service record: " + serviceRecordId);
-        return feedbackService.findByServiceRecord(serviceRecordId);
-    }
-
-    // ── Get All Feedback ──────────────────────────────────────────────────────
-
-    /**
-     * GET /feedback
-     */
-    public List<Feedback> getAllFeedback() {
-        System.out.println("[FeedbackController] Fetching all feedback records.");
-        return feedbackService.findAll();
-    }
-
-    // ── Get Average Rating ────────────────────────────────────────────────────
-
-    /**
-     * GET /feedback/average/{serviceRecordId}
+     * GET /api/feedback/{feedbackId}
      *
-     * Returns the calculated average star rating for a given service record.
+     * @param feedbackId the UUID of the feedback record
+     * @return Optional containing the Feedback, or empty if not found
      */
-    public double getAverageRating(String serviceRecordId) {
-        double avg = feedbackService.getAverageRating(serviceRecordId);
-        System.out.println("[FeedbackController] Average rating for service record "
-                + serviceRecordId + ": " + avg);
-        return avg;
+    public Optional<Feedback> getFeedback(String feedbackId) {
+        System.out.println("[FeedbackController] getFeedback – id=" + feedbackId);
+        return feedbackService.getFeedback(feedbackId);
     }
 
-    // ── Edit Feedback ─────────────────────────────────────────────────────────
+    // ── getAllFeedbacks ────────────────────────────────────────────────────────
 
     /**
-     * PUT /feedback/{feedbackId}
+     * GET /api/feedback
      *
-     * Allows a customer to update their rating and/or comment.
+     * Returns every feedback record in the system (admin use).
+     *
+     * @return list of all Feedback entities
      */
-    public Feedback editFeedback(String feedbackId, int newRating, String newComment) {
-        System.out.println("[FeedbackController] Editing feedback: " + feedbackId);
-        return feedbackService.edit(feedbackId, newRating, newComment);
+    public List<Feedback> getAllFeedbacks() {
+        System.out.println("[FeedbackController] getAllFeedbacks");
+        return feedbackService.getAllFeedbacks();
     }
 
-    // ── Delete Feedback ───────────────────────────────────────────────────────
+    // ── updateFeedback ────────────────────────────────────────────────────────
 
     /**
-     * DELETE /feedback/{feedbackId}
+     * PUT /api/feedback/{feedbackId}
      *
-     * Removes a feedback entry permanently. Returns true if deleted.
+     * Allows a user to change their star rating and/or comment.
+     *
+     * @param feedbackId the ID of the feedback to update
+     * @param newRating  updated rating (1–5)
+     * @param newComment updated comment text
+     * @return the updated Feedback entity
+     */
+    public Feedback updateFeedback(String feedbackId, int newRating, String newComment) {
+        System.out.println("[FeedbackController] updateFeedback – id=" + feedbackId
+                + ", newRating=" + newRating);
+        return feedbackService.updateFeedback(feedbackId, newRating, newComment);
+    }
+
+    // ── deleteFeedback ────────────────────────────────────────────────────────
+
+    /**
+     * DELETE /api/feedback/{feedbackId}
+     *
+     * Permanently removes a feedback record.
+     *
+     * @param feedbackId the ID of the feedback to delete
+     * @return true if deleted; false if not found
      */
     public boolean deleteFeedback(String feedbackId) {
-        System.out.println("[FeedbackController] Deleting feedback: " + feedbackId);
-        return feedbackService.delete(feedbackId);
+        System.out.println("[FeedbackController] deleteFeedback – id=" + feedbackId);
+        return feedbackService.deleteFeedback(feedbackId);
+    }
+
+    // ── Cross-module query helpers ────────────────────────────────────────────
+
+    /**
+     * GET /api/feedback/user/{userId}
+     *
+     * Returns all feedback submitted by a specific user.
+     * Integration point: User Module.
+     *
+     * @param userId the user's ID
+     * @return list of Feedback records belonging to that user
+     */
+    public List<Feedback> getFeedbackByUser(String userId) {
+        System.out.println("[FeedbackController] getFeedbackByUser – userId=" + userId);
+        return feedbackService.getFeedbackByUser(userId);
+    }
+
+    /**
+     * GET /api/feedback/service/{serviceId}
+     *
+     * Returns all feedback for a specific service record.
+     * Integration point: Service Module.
+     *
+     * @param serviceId the service record's ID
+     * @return list of Feedback records for that service
+     */
+    public List<Feedback> getFeedbackByService(String serviceId) {
+        System.out.println("[FeedbackController] getFeedbackByService – serviceId=" + serviceId);
+        return feedbackService.getFeedbackByService(serviceId);
+    }
+
+    /**
+     * GET /api/feedback/service/{serviceId}/average
+     *
+     * Returns the average star rating for a service record.
+     * Integration point: Service Module.
+     *
+     * @param serviceId the service record's ID
+     * @return average rating (1.0–5.0), or 0.0 if no reviews exist
+     */
+    public double getAverageRating(String serviceId) {
+        double avg = feedbackService.getAverageRating(serviceId);
+        System.out.println("[FeedbackController] getAverageRating – serviceId=" + serviceId + " → " + avg);
+        return avg;
     }
 }
