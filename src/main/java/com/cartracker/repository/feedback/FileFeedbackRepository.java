@@ -1,39 +1,44 @@
 package com.cartracker.repository.feedback;
 
+import com.cartracker.config.AppConfig;
 import com.cartracker.model.feedback.Feedback;
 
 import java.io.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * FileFeedbackRepository – flat-file implementation of FeedbackRepository.
  *
- * Demonstrates POLYMORPHISM: implements FeedbackRepository so it can be
- * swapped for a DatabaseFeedbackRepository without changing callers.
+ * Demonstrates POLYMORPHISM: can be swapped for JdbcFeedbackRepository
+ * without changing any caller (service, controller).
  *
- * Storage: one record per line in feedbacks.txt
- * CSV format: id|customerId|serviceRecordId|rating|comment|createdAt
+ * Storage file: src/main/resources/data/feedbacks.txt
+ * Line format : feedbackId|userId|serviceId|rating|comment|createdAt|updatedAt
  *
- * Team member: assign to the Feedback module owner.
+ * Thread-safety: single-threaded use only (typical for student projects).
+ * For multi-threaded use, add synchronization on write methods.
  */
 public class FileFeedbackRepository implements FeedbackRepository {
 
-    /** Path to the flat-file storage (configure via AppConfig if needed). */
-    private static final String FILE_PATH = "src/main/resources/data/feedbacks.txt";
+    // File path uses AppConfig.DATA_DIR so it stays consistent with the rest of the project
+    private static final String FILE_PATH =
+            AppConfig.DATA_DIR + AppConfig.FEEDBACKS_FILE;
 
     // ── Save ─────────────────────────────────────────────────────────────────
 
     @Override
     public Feedback save(Feedback feedback) {
-        // TODO: Call FileUtil.appendLine(FILE_PATH, feedback.toFileString())
-        // Placeholder: write directly via BufferedWriter
+        ensureFileExists();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true))) {
             writer.write(feedback.toFileString());
             writer.newLine();
         } catch (IOException e) {
-            throw new RuntimeException("Could not save feedback: " + e.getMessage(), e);
+            throw new RuntimeException("FileFeedbackRepository: could not save feedback – " + e.getMessage(), e);
         }
         return feedback;
     }
@@ -41,9 +46,9 @@ public class FileFeedbackRepository implements FeedbackRepository {
     // ── FindById ──────────────────────────────────────────────────────────────
 
     @Override
-    public Optional<Feedback> findById(String id) {
+    public Optional<Feedback> findById(String feedbackId) {
         return findAll().stream()
-                .filter(f -> f.getId().equals(id))
+                .filter(f -> f.getId().equals(feedbackId))
                 .findFirst();
     }
 
@@ -51,38 +56,37 @@ public class FileFeedbackRepository implements FeedbackRepository {
 
     @Override
     public List<Feedback> findAll() {
+        ensureFileExists();
         List<Feedback> list = new ArrayList<>();
-        File file = new File(FILE_PATH);
-        if (!file.exists()) return list;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                if (!line.isBlank()) {
+                line = line.trim();
+                if (!line.isEmpty()) {
                     list.add(parseLine(line));
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Could not read feedbacks file: " + e.getMessage(), e);
+            throw new RuntimeException("FileFeedbackRepository: could not read feedbacks file – " + e.getMessage(), e);
         }
-        return list;
+        return Collections.unmodifiableList(list);
     }
 
-    // ── FindByCustomerId ──────────────────────────────────────────────────────
+    // ── FindByUserId ──────────────────────────────────────────────────────────
 
     @Override
-    public List<Feedback> findByCustomerId(String customerId) {
+    public List<Feedback> findByUserId(String userId) {
         return findAll().stream()
-                .filter(f -> f.getCustomerId().equals(customerId))
+                .filter(f -> f.getUserId().equals(userId))
                 .collect(Collectors.toList());
     }
 
-    // ── FindByServiceRecordId ─────────────────────────────────────────────────
+    // ── FindByServiceId ───────────────────────────────────────────────────────
 
     @Override
-    public List<Feedback> findByServiceRecordId(String serviceRecordId) {
+    public List<Feedback> findByServiceId(String serviceId) {
         return findAll().stream()
-                .filter(f -> f.getServiceRecordId().equals(serviceRecordId))
+                .filter(f -> f.getServiceId().equals(serviceId))
                 .collect(Collectors.toList());
     }
 
@@ -90,7 +94,7 @@ public class FileFeedbackRepository implements FeedbackRepository {
 
     @Override
     public Feedback update(Feedback updated) {
-        List<Feedback> all = findAll();
+        List<Feedback> all = new ArrayList<>(findAll()); // mutable copy
         boolean found = false;
         StringBuilder sb = new StringBuilder();
 
@@ -103,55 +107,77 @@ public class FileFeedbackRepository implements FeedbackRepository {
             }
         }
 
-        if (!found) throw new RuntimeException("Feedback not found: " + updated.getId());
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, false))) {
-            writer.write(sb.toString());
-        } catch (IOException e) {
-            throw new RuntimeException("Could not update feedback: " + e.getMessage(), e);
+        if (!found) {
+            throw new RuntimeException("FileFeedbackRepository: feedback not found for update – id=" + updated.getId());
         }
+
+        writeAll(sb.toString());
         return updated;
     }
 
     // ── DeleteById ────────────────────────────────────────────────────────────
 
     @Override
-    public boolean deleteById(String id) {
-        List<Feedback> all = findAll();
+    public boolean deleteById(String feedbackId) {
+        List<Feedback> all = new ArrayList<>(findAll());
         List<Feedback> remaining = all.stream()
-                .filter(f -> !f.getId().equals(id))
+                .filter(f -> !f.getId().equals(feedbackId))
                 .collect(Collectors.toList());
 
-        if (remaining.size() == all.size()) return false; // not found
+        if (remaining.size() == all.size()) {
+            return false; // nothing was removed
+        }
 
         StringBuilder sb = new StringBuilder();
         remaining.forEach(f -> sb.append(f.toFileString()).append(System.lineSeparator()));
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, false))) {
-            writer.write(sb.toString());
-        } catch (IOException e) {
-            throw new RuntimeException("Could not delete feedback: " + e.getMessage(), e);
-        }
+        writeAll(sb.toString());
         return true;
     }
 
-    // ── Private helper ────────────────────────────────────────────────────────
+    // ── Private helpers ───────────────────────────────────────────────────────
 
     /**
-     * Parses a single CSV line back into a Feedback object.
-     * Format: id|customerId|serviceRecordId|rating|comment|createdAt
+     * Parses one pipe-delimited line back into a Feedback object.
+     * Format: feedbackId|userId|serviceId|rating|comment|createdAt|updatedAt
      */
     private Feedback parseLine(String line) {
-        String[] parts = line.split("\\|", -1);
-        // parts[0]=id, [1]=customerId, [2]=serviceRecordId, [3]=rating, [4]=comment, [5]=createdAt
+        String[] p = line.split("\\|", -1);
+        // Guard against old format (6 columns without updatedAt)
         Feedback f = new Feedback(
-                parts[0],
-                parts[1],
-                parts[2],
-                Integer.parseInt(parts[3]),
-                parts[4]
+                p[0],                          // feedbackId
+                p[1],                          // userId
+                p[2],                          // serviceId
+                Integer.parseInt(p[3]),        // rating
+                p[4]                           // comment
         );
-        f.setCreatedAt(LocalDateTime.parse(parts[5]));
+        if (p.length > 5 && !p[5].isEmpty()) {
+            f.setCreatedAt(LocalDateTime.parse(p[5]));
+        }
+        if (p.length > 6 && !p[6].isEmpty()) {
+            f.setUpdatedAt(LocalDateTime.parse(p[6]));
+        }
         return f;
+    }
+
+    /** Overwrites the entire file with the given content. */
+    private void writeAll(String content) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, false))) {
+            writer.write(content);
+        } catch (IOException e) {
+            throw new RuntimeException("FileFeedbackRepository: could not write feedbacks file – " + e.getMessage(), e);
+        }
+    }
+
+    /** Creates the file (and parent directories) if they do not yet exist. */
+    private void ensureFileExists() {
+        File file = new File(FILE_PATH);
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException("FileFeedbackRepository: could not create feedbacks.txt – " + e.getMessage(), e);
+            }
+        }
     }
 }

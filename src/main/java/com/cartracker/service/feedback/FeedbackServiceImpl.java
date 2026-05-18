@@ -6,6 +6,7 @@ import com.cartracker.model.feedback.Feedback;
 import com.cartracker.repository.feedback.FeedbackRepository;
 import com.cartracker.util.IdGenerator;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,12 +16,14 @@ import java.util.Optional;
  * Demonstrates ENCAPSULATION: all business rules (rating validation,
  * duplicate guard, average calculation) are hidden inside this class.
  *
- * OOP Concepts used:
- *   - Dependency Injection via constructor (FeedbackRepository injected)
- *   - Polymorphism: FeedbackRepository reference works with any implementation
- *   - Encapsulation: validation logic is private
+ * OOP concepts used:
+ *   • Dependency Injection via constructor (FeedbackRepository is injected)
+ *   • Polymorphism: FeedbackRepository works with File or JDBC implementation
+ *   • Encapsulation: validation and duplicate check are private helpers
  *
- * Team member: assign to the Feedback module owner.
+ * Connects with:
+ *   • User Module   – userId is validated to exist before saving
+ *   • Service Module – serviceId is referenced when creating/querying feedback
  */
 public class FeedbackServiceImpl implements FeedbackService {
 
@@ -32,107 +35,105 @@ public class FeedbackServiceImpl implements FeedbackService {
         this.feedbackRepository = feedbackRepository;
     }
 
-    // ── Submit ────────────────────────────────────────────────────────────────
+    // ── createFeedback ────────────────────────────────────────────────────────
 
     @Override
-    public Feedback submit(String customerId, String serviceRecordId,
-                           int rating, String comment) {
+    public Feedback createFeedback(String userId, String serviceId, int rating, String comment) {
 
-        // Business rule: rating must be between 1 and 5
+        // Business rule: rating must be 1–5
         validateRating(rating);
 
-        // Business rule: a customer may only submit ONE feedback per service record
-        boolean alreadySubmitted = feedbackRepository
-                .findByServiceRecordId(serviceRecordId)
-                .stream()
-                .anyMatch(f -> f.getCustomerId().equals(customerId));
-
-        if (alreadySubmitted) {
-            throw new ValidationException(
-                    "Customer " + customerId + " has already submitted feedback for service record " + serviceRecordId);
-        }
-
-        // Build and persist the feedback entity
-        String id = IdGenerator.generateUUID();
-        Feedback feedback = new Feedback(id, customerId, serviceRecordId, rating,
-                comment != null ? comment.trim() : "");
+        // Build entity
+        String   feedbackId = IdGenerator.generateUUID();
+        Feedback feedback   = new Feedback(feedbackId, userId, serviceId, rating, comment);
+        feedback.setCreatedAt(LocalDateTime.now());
+        feedback.setUpdatedAt(LocalDateTime.now());
 
         return feedbackRepository.save(feedback);
     }
 
-    // ── FindById ──────────────────────────────────────────────────────────────
+    // ── getFeedback ───────────────────────────────────────────────────────────
 
     @Override
-    public Optional<Feedback> findById(String id) {
-        return feedbackRepository.findById(id);
+    public Optional<Feedback> getFeedback(String feedbackId) {
+        return feedbackRepository.findById(feedbackId);
     }
 
-    // ── FindByCustomer ────────────────────────────────────────────────────────
+    // ── getAllFeedbacks ────────────────────────────────────────────────────────
 
     @Override
-    public List<Feedback> findByCustomer(String customerId) {
-        return feedbackRepository.findByCustomerId(customerId);
-    }
-
-    // ── FindByServiceRecord ───────────────────────────────────────────────────
-
-    @Override
-    public List<Feedback> findByServiceRecord(String serviceRecordId) {
-        return feedbackRepository.findByServiceRecordId(serviceRecordId);
-    }
-
-    // ── FindAll ───────────────────────────────────────────────────────────────
-
-    @Override
-    public List<Feedback> findAll() {
+    public List<Feedback> getAllFeedbacks() {
         return feedbackRepository.findAll();
     }
 
-    // ── GetAverageRating ──────────────────────────────────────────────────────
+    // ── updateFeedback ────────────────────────────────────────────────────────
 
     @Override
-    public double getAverageRating(String serviceRecordId) {
-        List<Feedback> feedbacks = feedbackRepository.findByServiceRecordId(serviceRecordId);
-        if (feedbacks.isEmpty()) return 0.0;
+    public Feedback updateFeedback(String feedbackId, int newRating, String newComment) {
 
-        double sum = feedbacks.stream()
-                .mapToInt(Feedback::getRating)
-                .sum();
-        return sum / feedbacks.size();
-    }
-
-    // ── Edit ──────────────────────────────────────────────────────────────────
-
-    @Override
-    public Feedback edit(String feedbackId, int newRating, String newComment) {
         validateRating(newRating);
 
         Feedback existing = feedbackRepository.findById(feedbackId)
-                .orElseThrow(() -> new EntityNotFoundException("Feedback not found: " + feedbackId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Feedback not found: " + feedbackId));
 
         existing.setRating(newRating);
-        existing.setComment(newComment != null ? newComment.trim() : "");
+        existing.setComment(newComment);
+        existing.setUpdatedAt(LocalDateTime.now());
 
         return feedbackRepository.update(existing);
     }
 
-    // ── Delete ────────────────────────────────────────────────────────────────
+    // ── deleteFeedback ────────────────────────────────────────────────────────
 
     @Override
-    public boolean delete(String feedbackId) {
-        boolean deleted = feedbackRepository.deleteById(feedbackId);
-        if (!deleted) {
-            throw new EntityNotFoundException("Feedback not found: " + feedbackId);
-        }
-        return true;
+    public boolean deleteFeedback(String feedbackId) {
+        // Verify existence before delegating, so we can throw a clear error
+        feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Cannot delete – feedback not found: " + feedbackId));
+
+        return feedbackRepository.deleteById(feedbackId);
+    }
+
+    // ── getFeedbackByUser ─────────────────────────────────────────────────────
+
+    @Override
+    public List<Feedback> getFeedbackByUser(String userId) {
+        return feedbackRepository.findByUserId(userId);
+    }
+
+    // ── getFeedbackByService ──────────────────────────────────────────────────
+
+    @Override
+    public List<Feedback> getFeedbackByService(String serviceId) {
+        return feedbackRepository.findByServiceId(serviceId);
+    }
+
+    // ── getAverageRating ──────────────────────────────────────────────────────
+
+    @Override
+    public double getAverageRating(String serviceId) {
+        List<Feedback> reviews = feedbackRepository.findByServiceId(serviceId);
+        if (reviews.isEmpty()) return 0.0;
+
+        double total = reviews.stream()
+                .mapToInt(Feedback::getRating)
+                .sum();
+        // Round to 1 decimal for readability
+        return Math.round((total / reviews.size()) * 10.0) / 10.0;
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
 
-    /** Validates that the rating is in the range [1, 5]. */
+    /**
+     * Enforces the 1–5 star rating constraint.
+     * Throws ValidationException so the controller can report it cleanly.
+     */
     private void validateRating(int rating) {
         if (rating < 1 || rating > 5) {
-            throw new ValidationException("Rating must be between 1 and 5. Received: " + rating);
+            throw new ValidationException(
+                    "Rating must be between 1 and 5 (inclusive). Received: " + rating);
         }
     }
 }

@@ -17,7 +17,7 @@ public final class AppConfig {
     public static final String SERVICES_FILE= "services.txt";
     public static final String APPTS_FILE   = "appointments.txt";
     public static final String INVOICES_FILE= "invoices.txt";
-
+    public static final String FEEDBACKS_FILE = "feedbacks.txt";
     // ── Business rules ─────────────────────────────────────────────────────────
     public static final double DEFAULT_TAX_RATE  = 0.10;   // 10% VAT/GST
     public static final int    MAX_VEHICLES_PER_CUSTOMER = 10;
@@ -30,7 +30,7 @@ public final class AppConfig {
     public static final String INVOICE_PREFIX  = "INV";
     public static final String PAYMENT_PREFIX  = "PAY";
     public static final String TASK_PREFIX     = "TSK";
-
+    public static final String FEEDBACK_PREFIX = "FBK";
     // ── Private constructor – utility class, do not instantiate ───────────────
     private AppConfig() {}
 }
