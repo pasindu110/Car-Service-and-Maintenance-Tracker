@@ -7,6 +7,11 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+import com.cartracker.controller.feedback.FeedbackController;
+import com.cartracker.handler.FeedbackHttpHandler;
+import com.cartracker.repository.feedback.JdbcFeedbackRepository;
+import com.cartracker.service.feedback.FeedbackServiceImpl;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,17 +28,27 @@ public class WebServer {
         this.userService = userService;
     }
 
-    public void start() throws IOException {
+    public void start() throws IOException
+    {
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
-        
+
         server.createContext("/", new StaticFileHandler());
         server.createContext("/api/signup", new SignUpHandler());
-        server.createContext("/api/login", new LoginHandler());
-        
+        server.createContext("/api/login",  new LoginHandler());
+
+        // ── Feedback Module ────────────────────────────────────────────────────
+        JdbcFeedbackRepository feedbackRepo       = new JdbcFeedbackRepository();
+        FeedbackServiceImpl    feedbackService    = new FeedbackServiceImpl(feedbackRepo);
+        FeedbackController     feedbackController = new FeedbackController(feedbackService);
+        server.createContext("/api/feedback", new FeedbackHttpHandler(feedbackController));
+
         server.setExecutor(null);
         server.start();
+        // CORS is applied inside each handler via addCorsHeaders()
         System.out.println("[Web Server] Started at http://localhost:8080");
     }
+
+
 
     private class StaticFileHandler implements HttpHandler {
         @Override
@@ -42,7 +57,7 @@ public class WebServer {
             if (path.equals("/")) {
                 path = "/index.html";
             }
-            
+
             File file = new File("src/main/resources/web" + path);
             if (file.exists() && !file.isDirectory()) {
                 byte[] bytes = Files.readAllBytes(file.toPath());
@@ -86,9 +101,9 @@ public class WebServer {
                     newCustomer.setPassword(password);
                     newCustomer.setCreatedAt(LocalDateTime.now());
                     newCustomer.setUpdatedAt(LocalDateTime.now());
-                    
+
                     userService.register(newCustomer);
-                    
+
                     String response = "{\"success\":true, \"message\":\"Account created successfully!\"}";
                     exchange.getResponseHeaders().set("Content-Type", "application/json");
                     exchange.sendResponseHeaders(200, response.length());
@@ -146,3 +161,5 @@ public class WebServer {
         }
     }
 }
+
+
