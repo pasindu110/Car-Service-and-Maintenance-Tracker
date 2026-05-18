@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,603 +7,109 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4f46e5;
-            /* Purple/Blue matching the progress bar */
+            --primary:       #4f46e5;
             --primary-light: #e0e7ff;
-            --dark: #1b1c21;
-            --text-dark: #111827;
-            --text-gray: #6b7280;
-            --bg: #f3f4f6;
-            --border: #e5e7eb;
-            --white: #ffffff;
-            --radius: 12px;
-            --radius-sm: 8px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text-dark);
-            padding-top: 80px;
-            /* offset for fixed nav */
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* ── SHARED NAV (from index.html) ── */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 60px;
-            background: rgba(255, 255, 255, 0.97);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .nav-logo {
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-decoration: none;
-            color: #1a1a1a;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 32px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            font-size: 13px;
-            color: #444;
-            text-decoration: none;
-            transition: color .2s;
-        }
-
-        .nav-links a:hover {
-            color: #1a1a1a;
-        }
-
-        .nav-links a.active {
-            color: #1a1a1a;
-            font-weight: 600;
-            border-bottom: 2px solid #c9a84c;
-            padding-bottom: 2px;
-        }
-
-        .nav-right-area {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .btn-login {
-            font-size: 13px;
-            color: #444;
-            text-decoration: none;
-        }
-
-        .btn-book {
-            background: #1a1a1a;
-            color: #fff;
-            font-size: 13px;
-            padding: 10px 22px;
-            border: none;
-            cursor: pointer;
-            letter-spacing: .5px;
-        }
-
-        /* ── SHARED FOOTER (from index.html) ── */
-        .site-footer {
-            background: #2c1a0e;
-            color: #fff;
-            padding: 60px;
-            margin-top: auto;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-
-        .footer-logo-txt {
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-
-        .footer-tagline {
-            font-size: 13px;
-            color: rgba(255, 255, 255, .5);
-            line-height: 1.7;
-            margin-bottom: 20px;
-        }
-
-        .footer-col h4 {
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, .5);
-            margin-bottom: 16px;
-        }
-
-        .footer-col ul {
-            list-style: none;
-        }
-
-        .footer-col ul li {
-            margin-bottom: 10px;
-        }
-
-        .footer-col ul li a {
-            font-size: 13px;
-            color: rgba(255, 255, 255, .7);
-            text-decoration: none;
-            transition: color .2s;
-        }
-
-        .footer-col ul li a:hover {
-            color: #c9a84c;
-        }
-
-        .newsletter {
-            display: flex;
-            margin-top: 12px;
-        }
-
-        .newsletter input {
-            flex: 1;
-            padding: 10px 14px;
-            background: rgba(255, 255, 255, .1);
-            border: 1px solid rgba(255, 255, 255, .2);
-            color: #fff;
-            font-size: 13px;
-            outline: none;
-        }
-
-        .newsletter input::placeholder {
-            color: rgba(255, 255, 255, .4);
-        }
-
-        .newsletter button {
-            background: #c9a84c;
-            border: none;
-            padding: 10px 16px;
-            cursor: pointer;
-            color: #fff;
-        }
-
-        .footer-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 24px;
-            border-top: 1px solid rgba(255, 255, 255, .1);
-        }
-
-        .footer-bottom p {
-            font-size: 12px;
-            color: rgba(255, 255, 255, .4);
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .footer-links a {
-            font-size: 12px;
-            color: rgba(255, 255, 255, .4);
-            text-decoration: none;
-        }
-
-        .socials {
-            display: flex;
-            gap: 12px;
-        }
-
-        .social-icon {
-            width: 32px;
-            height: 32px;
-            border: 1px solid rgba(255, 255, 255, .2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: .2s;
-        }
-
-        .social-icon:hover {
-            border-color: #c9a84c;
-        }
-
-        .social-icon svg {
-            width: 14px;
-            height: 14px;
-            fill: rgba(255, 255, 255, .6);
-        }
-
-        /* ── MAIN CONTENT ── */
-        .container {
-            max-width: 1000px;
-            margin: 40px auto 60px;
-            padding: 0 24px;
-            flex: 1;
-        }
-
-        .page-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-
-        .back-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text-gray);
-            cursor: pointer;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-
-        .back-btn:hover {
-            background: var(--bg);
-            color: var(--text-dark);
-        }
-
-        .back-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
-        }
-
-        .page-title {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-
-        .progress-segment {
-            height: 6px;
-            flex: 1;
-            background-color: var(--white);
-            border-radius: 4px;
-            box-shadow: inset 0 0 0 1px var(--border);
-        }
-
-        .progress-segment.active {
-            background-color: var(--primary);
-            box-shadow: none;
-        }
-
-        /* Form Sections */
-        .form-section {
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-            margin-bottom: 16px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .form-section-header {
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            border-bottom: 1px solid transparent;
-        }
-
-        .form-section.active .form-section-header {
-            border-bottom-color: var(--border);
-        }
-
-        .step-number {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            border: 1.5px solid var(--text-gray);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-gray);
-        }
-
-        .form-section.active .step-number {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-gray);
-        }
-
-        .form-section.active .section-title {
-            color: var(--primary);
-        }
-
-        .form-content {
-            display: none;
-            padding: 24px;
-        }
-
-        .form-section.active .form-content {
-            display: block;
-        }
-
-        /* Form Grid */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-label {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-dark);
-            display: flex;
-            align-items: center;
-        }
-
-        .form-label span {
-            color: #ef4444;
-            /* Red asterisk */
-            margin-left: 4px;
-        }
-
-        .form-input-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            background: var(--white);
-            transition: 0.2s;
-        }
-
-        .form-input-container:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: none;
-            outline: none;
-            font-size: 14px;
-            color: var(--text-dark);
-            background: transparent;
-        }
-
-        .form-input::placeholder {
-            color: #9ca3af;
-        }
-
-        /* Input Select Prefix (like +91 or Mr.) */
-        .input-prefix {
-            display: flex;
-            align-items: center;
-            padding: 0 16px;
-            border-right: 1px solid var(--border);
-            background: #f9fafb;
-            color: var(--text-dark);
-            font-size: 14px;
-            cursor: pointer;
-            height: 100%;
-            gap: 6px;
-        }
-
-        .input-prefix select {
-            appearance: none;
-            background: transparent;
-            border: none;
-            outline: none;
-            font-size: 14px;
-            cursor: pointer;
-            color: var(--text-dark);
-            padding-right: 4px;
-        }
-
-        .input-prefix svg {
-            width: 12px;
-            height: 12px;
-            fill: var(--text-gray);
-        }
-
-        .input-icon {
-            padding-left: 16px;
-            color: var(--text-gray);
-            display: flex;
-            align-items: center;
-        }
-
-        .input-icon svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-        }
-
-        /* Select Dropdown */
-        .form-select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            outline: none;
-            font-size: 14px;
-            color: var(--text-dark);
-            appearance: none;
-            background: var(--white) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%236b7280"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 16px center;
-            background-size: 16px;
-            transition: 0.2s;
-        }
-
-        .form-select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        /* Radio Buttons */
-        .radio-group {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            height: 44px;
-            /* Match input height */
-        }
-
-        .radio-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: var(--text-dark);
-            cursor: pointer;
-        }
-
-        .radio-input {
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border: 2px solid var(--border);
-            border-radius: 50%;
-            outline: none;
-            position: relative;
-            cursor: pointer;
-            background: var(--white);
-        }
-
-        .radio-input:checked {
-            border-color: var(--primary);
-        }
-
-        .radio-input:checked::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--primary);
-        }
+            --text-dark:     #111827;
+            --text-gray:     #6b7280;
+            --bg:            #f3f4f6;
+            --border:        #e5e7eb;
+            --white:         #ffffff;
+            --radius:        12px;
+            --radius-sm:     8px;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+
+        body { background:var(--bg); color:var(--text-dark); padding-top:80px; display:flex; flex-direction:column; min-height:100vh; }
+
+        /* ── NAV ── */
+        nav { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 60px;background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1px solid #f0f0f0; }
+        .nav-logo { font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;color:#1a1a1a; }
+        .nav-links { display:flex;gap:32px;list-style:none; }
+        .nav-links a { font-size:13px;color:#444;text-decoration:none;transition:color .2s; }
+        .nav-links a:hover { color:#1a1a1a; }
+        .nav-links a.active { color:#1a1a1a;font-weight:600;border-bottom:2px solid #c9a84c;padding-bottom:2px; }
+        .nav-right-area { display:flex;align-items:center;gap:16px; }
+        .btn-login { font-size:13px;color:#444;text-decoration:none; }
+        .btn-book { background:#1a1a1a;color:#fff;font-size:13px;padding:10px 22px;border:none;cursor:pointer;letter-spacing:.5px; }
+
+        /* ── FOOTER ── */
+        .site-footer { background:#2c1a0e;color:#fff;padding:60px;margin-top:auto; }
+        .footer-grid { display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px; }
+        .footer-logo-txt { font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px; }
+        .footer-tagline { font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:20px; }
+        .footer-col h4 { font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:16px; }
+        .footer-col ul { list-style:none; }
+        .footer-col ul li { margin-bottom:10px; }
+        .footer-col ul li a { font-size:13px;color:rgba(255,255,255,.7);text-decoration:none;transition:color .2s; }
+        .footer-col ul li a:hover { color:#c9a84c; }
+        .newsletter { display:flex;margin-top:12px; }
+        .newsletter input { flex:1;padding:10px 14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;outline:none; }
+        .newsletter input::placeholder { color:rgba(255,255,255,.4); }
+        .newsletter button { background:#c9a84c;border:none;padding:10px 16px;cursor:pointer;color:#fff; }
+        .footer-bottom { display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid rgba(255,255,255,.1); }
+        .footer-bottom p { font-size:12px;color:rgba(255,255,255,.4); }
+        .footer-links { display:flex;gap:20px; }
+        .footer-links a { font-size:12px;color:rgba(255,255,255,.4);text-decoration:none; }
+        .socials { display:flex;gap:12px; }
+        .social-icon { width:32px;height:32px;border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s; }
+        .social-icon:hover { border-color:#c9a84c; }
+        .social-icon svg { width:14px;height:14px;fill:rgba(255,255,255,.6); }
+
+        /* ── PAGE ── */
+        .container { max-width:800px;margin:40px auto 60px;padding:0 24px;flex:1; }
+
+        .page-header { display:flex;align-items:center;gap:16px;margin-bottom:32px; }
+
+        .back-btn { display:flex;align-items:center;justify-content:center;width:40px;height:40px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-gray);text-decoration:none;transition:.2s; }
+        .back-btn:hover { background:var(--bg);color:var(--text-dark); }
+        .back-btn svg { width:20px;height:20px;fill:currentColor; }
+
+        .page-title { font-size:24px;font-weight:700; }
+
+        /* ── FORM CARD ── */
+        .form-card { background:var(--white);border-radius:var(--radius);border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,.03);padding:36px; }
+
+        .form-grid { display:grid;grid-template-columns:1fr 1fr;gap:24px; }
+
+        .form-group { display:flex;flex-direction:column;gap:8px; }
+
+        .form-label { font-size:13px;font-weight:500;color:var(--text-dark); }
+        .form-label span { color:#ef4444;margin-left:4px; }
+
+        .form-input-container { position:relative;display:flex;align-items:center;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;background:var(--white);transition:.2s; }
+        .form-input-container:focus-within { border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light); }
+
+        .form-input { width:100%;padding:12px 16px;border:none;outline:none;font-size:14px;color:var(--text-dark);background:transparent; }
+        .form-input::placeholder { color:#9ca3af; }
+
+        .input-icon { padding-left:14px;color:var(--text-gray);display:flex;align-items:center; }
+        .input-icon svg { width:18px;height:18px;fill:currentColor; }
+
+        /* Mileage unit label */
+        .input-suffix { padding:0 14px;font-size:13px;color:var(--text-gray);border-left:1px solid var(--border);background:#f9fafb; }
+
+        /* Fuel radio group */
+        .radio-group { display:flex;align-items:center;gap:20px;height:44px; }
+        .radio-label { display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-dark);cursor:pointer; }
+        .radio-input { appearance:none;width:18px;height:18px;border:2px solid var(--border);border-radius:50%;outline:none;position:relative;cursor:pointer;background:var(--white); }
+        .radio-input:checked { border-color:var(--primary); }
+        .radio-input:checked::after { content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;border-radius:50%;background:var(--primary); }
 
         /* Form Actions */
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 16px;
-            margin-top: 32px;
-        }
+        .form-actions { display:flex;justify-content:flex-end;gap:16px;margin-top:32px; }
+        .btn { padding:12px 24px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:.2s; }
+        .btn-outline { background:var(--white);border:1px solid var(--border);color:var(--text-dark); }
+        .btn-outline:hover { background:var(--bg); }
+        .btn-primary { background:var(--primary);color:var(--white); }
+        .btn-primary:hover { opacity:.9; }
 
-        .btn {
-            padding: 12px 24px;
-            border-radius: var(--radius-sm);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: 0.2s;
-        }
-
-        .btn-outline {
-            background: var(--white);
-            border: 1px solid var(--border);
-            color: var(--text-dark);
-        }
-
-        .btn-outline:hover {
-            background: var(--bg);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: var(--white);
-        }
-
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
-
-        @media (max-width: 768px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Upload Area */
-        .upload-area {
-            border: 2px dashed var(--border);
-            border-radius: var(--radius);
-            padding: 48px;
-            text-align: center;
-            background: #f9fafb;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .upload-area:hover {
-            border-color: var(--primary);
-            background: #f5f3ff;
-        }
+        @media (max-width:768px) { .form-grid { grid-template-columns:1fr; } }
     </style>
 </head>
 
 <body>
 
-    <!-- SHARED NAV -->
     <nav id="mainNav">
         <a class="nav-logo" href="index.html">CarTracker</a>
         <ul class="nav-links">
@@ -623,118 +128,86 @@
 
         <div class="page-header">
             <a href="my-cars.html" class="back-btn">
-                <svg viewBox="0 0 24 24">
-                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
-                </svg>
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </a>
             <h1 class="page-title">Add Vehicle</h1>
         </div>
 
-        <!-- Progress bar removed as form is now single step -->
+        <div class="form-card">
+            <form id="addCarForm" method="POST">
+                <!-- Hidden: logged-in user's ID (set by JS before submit) -->
+                <input type="hidden" name="owner_id" id="ownerIdField">
 
-        <form action="my-cars.html" id="addCarForm" method="POST">
-            <!-- Hidden field: logged-in user's ID (set by JS before submit) -->
-            <input type="hidden" name="owner_id" id="ownerIdField">
-            <div class="form-section active">
-                <div class="form-section-header" style="cursor: default;">
-                    <div class="section-title">Vehicle Details</div>
-                </div>
+                <div class="form-grid">
 
-                <div class="form-content" style="display: block;">
-                    <div class="form-grid">
-
-                        <div class="form-group">
-                            <label class="form-label">Brand / Make <span>*</span></label>
-                            <div class="form-input-container">
-                                <input type="text" name="make" class="form-input" placeholder="e.g. BMW, Toyota, Audi"
-                                    required>
-                            </div>
+                    <div class="form-group">
+                        <label class="form-label">Brand / Make <span>*</span></label>
+                        <div class="form-input-container">
+                            <input type="text" name="make" class="form-input" placeholder="e.g. BMW, Toyota, Audi" required>
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Model <span>*</span></label>
-                            <div class="form-input-container">
-                                <input type="text" name="model" class="form-input"
-                                    placeholder="e.g. M4 Coupe, Q3, Model S" required>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Year <span>*</span></label>
-                            <div class="form-input-container">
-                                <div class="input-icon">
-                                    <svg viewBox="0 0 24 24">
-                                        <path
-                                            d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" />
-                                    </svg>
-                                </div>
-                                <input type="number" name="year" class="form-input" placeholder="YYYY" min="1900"
-                                    max="2100" required>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">License Plate <span>*</span></label>
-                            <div class="form-input-container">
-                                <input type="text" name="license_plate" class="form-input" placeholder="e.g. ABC-1234"
-                                    required>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Color</label>
-                            <div class="form-input-container">
-                                <input type="text" name="color" class="form-input" placeholder="e.g. Black, White, Red">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Fuel Type</label>
-                            <div class="radio-group">
-                                <label class="radio-label">
-                                    <input type="radio" name="fuel_type" value="Petrol" class="radio-input" checked>
-                                    Petrol
-                                </label>
-                                <label class="radio-label">
-                                    <input type="radio" name="fuel_type" value="Diesel" class="radio-input">
-                                    Diesel
-                                </label>
-                                <label class="radio-label">
-                                    <input type="radio" name="fuel_type" value="Electric" class="radio-input">
-                                    Electric
-                                </label>
-                                <label class="radio-label">
-                                    <input type="radio" name="fuel_type" value="Hybrid" class="radio-input">
-                                    Hybrid
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Mileage</label>
-                            <div class="form-input-container">
-                                <input type="number" name="mileage" class="form-input" placeholder="e.g. 15000"
-                                    step="0.1" required>
-                                <div class="input-prefix"
-                                    style="border-right: none; border-left: 1px solid var(--border);">
-                                    km
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
 
-                    <div class="form-actions">
-                        <button type="button" onclick="window.location.href='my-cars.html'"
-                            class="btn btn-outline">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Add Vehicle</button>
+                    <div class="form-group">
+                        <label class="form-label">Model <span>*</span></label>
+                        <div class="form-input-container">
+                            <input type="text" name="model" class="form-input" placeholder="e.g. M4 Coupe, Q3" required>
+                        </div>
                     </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Year <span>*</span></label>
+                        <div class="form-input-container">
+                            <div class="input-icon">
+                                <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+                            </div>
+                            <input type="number" name="year" class="form-input" placeholder="YYYY" min="1900" max="2100" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">License Plate <span>*</span></label>
+                        <div class="form-input-container">
+                            <input type="text" name="license_plate" class="form-input" placeholder="e.g. ABC-1234" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Color</label>
+                        <div class="form-input-container">
+                            <input type="text" name="color" class="form-input" placeholder="e.g. Black, White, Red">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Mileage (km)</label>
+                        <div class="form-input-container">
+                            <input type="number" name="mileage" class="form-input" placeholder="e.g. 15000" min="0" step="1">
+                            <span class="input-suffix">km</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="grid-column:1/-1;">
+                        <label class="form-label">Fuel Type</label>
+                        <div class="radio-group">
+                            <label class="radio-label"><input type="radio" name="fuel_type" value="Petrol"   class="radio-input" checked> Petrol</label>
+                            <label class="radio-label"><input type="radio" name="fuel_type" value="Diesel"   class="radio-input"> Diesel</label>
+                            <label class="radio-label"><input type="radio" name="fuel_type" value="Electric" class="radio-input"> Electric</label>
+                            <label class="radio-label"><input type="radio" name="fuel_type" value="Hybrid"   class="radio-input"> Hybrid</label>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
-        </form>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="window.location.href='my-cars.html'">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Vehicle</button>
+                </div>
+            </form>
+        </div>
+
     </div>
 
-    <!-- SHARED FOOTER -->
+    <!-- FOOTER -->
     <footer class="site-footer">
         <div class="footer-grid">
             <div>
@@ -742,7 +215,7 @@
                 <p class="footer-tagline">Professional car service and maintenance tracking for every vehicle owner.</p>
                 <p style="font-size:12px;color:rgba(255,255,255,.4);">info@cartracker.com</p>
                 <div class="newsletter" style="margin-top:16px;">
-                    <input type="email" placeholder="Your email address" />
+                    <input type="email" placeholder="Your email address">
                     <button>&rarr;</button>
                 </div>
             </div>
@@ -753,7 +226,6 @@
                     <li><a href="#">Brake Service</a></li>
                     <li><a href="#">Full Diagnostic</a></li>
                     <li><a href="#">Tyre Rotation</a></li>
-                    <li><a href="#">Full Service</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -763,15 +235,12 @@
                     <li><a href="#">Appointments</a></li>
                     <li><a href="#">Service History</a></li>
                     <li><a href="#">Invoices</a></li>
-                    <li><a href="#">Feedback</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4>Company</h4>
                 <ul>
                     <li><a href="#">About Us</a></li>
-                    <li><a href="#">Our Team</a></li>
-                    <li><a href="#">Careers</a></li>
                     <li><a href="#">Contact</a></li>
                     <li><a href="#">Privacy Policy</a></li>
                 </ul>
@@ -782,94 +251,80 @@
             <div class="footer-links">
                 <a href="#">Terms</a>
                 <a href="#">Privacy policy</a>
-                <a href="#">Accessibility</a>
             </div>
             <div class="socials">
-                <div class="social-icon"><svg viewBox="0 0 24 24">
-                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                    </svg></div>
-                <div class="social-icon"><svg viewBox="0 0 24 24">
-                        <rect x="2" y="2" width="20" height="20" rx="5" />
-                        <circle cx="12" cy="12" r="5" />
-                        <circle cx="17.5" cy="6.5" r="1.5" />
-                    </svg></div>
-                <div class="social-icon"><svg viewBox="0 0 24 24">
-                        <path
-                            d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 22.43.36a9 9 0 0 1-2.88 1.1A4.52 4.52 0 0 0 16.11 0c-2.5 0-4.52 2-4.52 4.5 0 .35.04.7.11 1.03C7.69 5.34 4.07 3.58 1.64.9a4.5 4.5 0 0 0-.61 2.27c0 1.56.8 2.94 2 3.75A4.49 4.49 0 0 1 .96 6v.06c0 2.18 1.55 4 3.6 4.42a4.52 4.52 0 0 1-2.04.08 4.52 4.52 0 0 0 4.22 3.13A9.05 9.05 0 0 1 0 15.54 12.77 12.77 0 0 0 6.92 17.5c8.3 0 12.85-6.88 12.85-12.85 0-.2 0-.39-.01-.58A9.17 9.17 0 0 0 23 3z" />
-                    </svg></div>
+                <div class="social-icon"><svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></div>
+                <div class="social-icon"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg></div>
+                <div class="social-icon"><svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 22.43.36a9 9 0 0 1-2.88 1.1A4.52 4.52 0 0 0 16.11 0c-2.5 0-4.52 2-4.52 4.5 0 .35.04.7.11 1.03C7.69 5.34 4.07 3.58 1.64.9a4.5 4.5 0 0 0-.61 2.27c0 1.56.8 2.94 2 3.75A4.49 4.49 0 0 1 .96 6v.06c0 2.18 1.55 4 3.6 4.42a4.52 4.52 0 0 1-2.04.08 4.52 4.52 0 0 0 4.22 3.13A9.05 9.05 0 0 1 0 15.54 12.77 12.77 0 0 0 6.92 17.5c8.3 0 12.85-6.88 12.85-12.85 0-.2 0-.39-.01-.58A9.17 9.17 0 0 0 23 3z"/></svg></div>
             </div>
         </div>
     </footer>
 
     <script>
-        // Nav shadow on scroll
-        window.addEventListener('scroll', () => {
-            document.getElementById('mainNav').style.boxShadow =
-                window.scrollY > 10 ? '0 2px 20px rgba(0,0,0,.08)' : 'none';
-        });
-        // Login state
-        const navRight = document.getElementById('navRight');
-        if (localStorage.getItem('userLoggedIn') === 'true') {
-            const userName = localStorage.getItem('userName') || 'User';
-            const initial = userName.charAt(0).toUpperCase();
-            navRight.innerHTML = `
+    // Nav shadow + login state
+    window.addEventListener('scroll', () => {
+        document.getElementById('mainNav').style.boxShadow =
+            window.scrollY > 10 ? '0 2px 20px rgba(0,0,0,.08)' : 'none';
+    });
+    const navRight = document.getElementById('navRight');
+    if (localStorage.getItem('userLoggedIn') === 'true') {
+        const userName = localStorage.getItem('userName') || 'User';
+        const initial = userName.charAt(0).toUpperCase();
+        navRight.innerHTML = `
             <a href="profile.html" style="font-size:13px;font-weight:600;color:#1a1a1a;text-decoration:none;display:flex;align-items:center;gap:8px;">
                 <div style="width:32px;height:32px;background:#c9a84c;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">${initial}</div>
                 ${userName}
             </a>`;
+    }
+
+    // ── Form submit: resolve owner_id then POST ───────────────────────────────
+    document.getElementById('addCarForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const userEmail = localStorage.getItem('userEmail') || '';
+        if (!userEmail) {
+            alert('You must be logged in to add a vehicle.');
+            window.location.href = 'login.html';
+            return;
         }
 
-        // Form submission via AJAX → POST /api/vehicles
-        document.getElementById('addCarForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const userEmail = localStorage.getItem('userEmail') || '';
-            if (!userEmail) {
-                alert('You must be logged in to add a vehicle. Please log in first.');
-                window.location.href = 'login.html';
-                return;
+        // Fetch real user ID from server
+        let resolvedId = localStorage.getItem('userId') || '';
+        try {
+            const idRes  = await fetch('/api/user-id?email=' + encodeURIComponent(userEmail));
+            const idJson = await idRes.json();
+            if (idJson.success) {
+                resolvedId = idJson.id;
+                localStorage.setItem('userId', resolvedId);
             }
+        } catch (_) {}
 
-            // ── Step 1: Fetch the real user ID from server by email ──────────
-            let resolvedId = localStorage.getItem('userId') || '';
-            try {
-                const idRes  = await fetch('/api/user-id?email=' + encodeURIComponent(userEmail));
-                const idJson = await idRes.json();
-                if (idJson.success) {
-                    resolvedId = idJson.id;
-                    localStorage.setItem('userId', resolvedId); // cache for next time
-                }
-            } catch (err) { /* network error – fall back to cached value */ }
+        if (!resolvedId) {
+            alert('Could not find your account. Please log in again.');
+            window.location.href = 'login.html';
+            return;
+        }
 
-            if (!resolvedId) {
-                alert('Could not find your account on the server. Please log in again.');
-                window.location.href = 'login.html';
-                return;
+        document.getElementById('ownerIdField').value = resolvedId;
+        const data = new URLSearchParams(new FormData(e.target));
+        data.append('user_email', userEmail);
+
+        try {
+            const res  = await fetch('/api/vehicles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: data.toString()
+            });
+            const json = await res.json();
+            if (json.success) {
+                window.location.href = 'my-cars.html';
+            } else {
+                alert('Error: ' + json.message);
             }
-
-            // ── Step 2: Submit the vehicle form ─────────────────────────────
-            document.getElementById('ownerIdField').value = resolvedId;
-            const form = e.target;
-            const data = new URLSearchParams(new FormData(form));
-            data.append('user_email', userEmail);
-
-            try {
-                const res  = await fetch('/api/vehicles', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: data.toString()
-                });
-                const json = await res.json();
-                if (json.success) {
-                    window.location.href = 'my-cars.html';
-                } else {
-                    alert('Error: ' + json.message);
-                }
-            } catch (err) {
-                alert('Failed to connect to server. Make sure the app is running.');
-            }
-        });
+        } catch (err) {
+            alert('Failed to connect to server. Make sure the app is running.');
+        }
+    });
     </script>
 </body>
-
 </html>
