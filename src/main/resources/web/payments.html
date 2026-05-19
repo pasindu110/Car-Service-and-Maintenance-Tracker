@@ -22,30 +22,65 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .payment-head h1{font-size:32px;font-weight:700;margin-bottom:8px;letter-spacing:-0.02em;}
 .payment-head p{font-size:14px;color:#666;max-width:480px;line-height:1.6;}
 
+/* ── Saved cards list ── */
+.saved-section{margin-bottom:48px;}
+.saved-section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:16px;}
+.saved-cards-list{display:flex;flex-direction:column;gap:12px;}
+.saved-card-item{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#fff;border:1px solid #f0f0f0;border-radius:14px;padding:18px 22px;box-shadow:0 2px 12px rgba(0,0,0,.04);transition:border-color .2s,box-shadow .2s;}
+.saved-card-item:hover{border-color:#e0e0e0;box-shadow:0 4px 20px rgba(0,0,0,.07);}
+.saved-card-item.editing{border-color:#c9a84c;box-shadow:0 0 0 3px rgba(201,168,76,.15);}
+.saved-card-left{display:flex;align-items:center;gap:16px;min-width:0;}
+.saved-card-brand-badge{width:48px;height:30px;border-radius:6px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;letter-spacing:1.5px;color:#fff;text-transform:uppercase;flex-shrink:0;}
+.saved-card-brand-badge.visa{background:linear-gradient(135deg,#1a1fbe,#1434cb);}
+.saved-card-brand-badge.mastercard{background:linear-gradient(135deg,#eb001b,#f79e1b);}
+.saved-card-brand-badge.amex{background:linear-gradient(135deg,#007bc1,#00aeef);}
+.saved-card-brand-badge.discover{background:linear-gradient(135deg,#e65c00,#f9d423);}
+.saved-card-info{min-width:0;}
+.saved-card-number{font-size:14px;font-weight:600;color:#1a1a1a;letter-spacing:.05em;}
+.saved-card-meta{font-size:12px;color:#888;margin-top:2px;}
+.saved-card-right{display:flex;gap:8px;flex-shrink:0;}
+.btn-item-edit,.btn-item-delete{font-size:12px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:inherit;transition:background .2s,border-color .2s,color .2s;}
+.btn-item-edit{background:#fff;color:#1a1a1a;border:1px solid #e0e0e0;}
+.btn-item-edit:hover{border-color:#c9a84c;color:#2c1a0e;background:#fffef8;}
+.btn-item-delete{background:#fff;color:#b42318;border:1px solid #f0c4c1;}
+.btn-item-delete:hover{background:#fef6f6;border-color:#e85d5d;color:#8b1a12;}
+.no-cards{font-size:13px;color:#aaa;padding:24px 0;text-align:center;}
+
 .layout{display:grid;grid-template-columns:1fr 400px;gap:48px;align-items:start;}
 @media (max-width:960px){.layout{grid-template-columns:1fr;}.payment-card-wrap{order:-1;}nav{padding:18px 24px;}.payment-main{padding-left:24px;padding-right:24px;}}
+
+/* ── Toast notification ── */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a1a;color:#fff;font-size:13px;font-weight:500;padding:12px 24px;border-radius:100px;box-shadow:0 8px 32px rgba(0,0,0,.2);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:999;white-space:nowrap;}
+.toast.visible{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.error{background:#b42318;}
 
 /* ── Form ── */
 .pay-form{background:#fff;border-radius:16px;padding:36px;box-shadow:0 4px 40px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.04);}
 .pay-form-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px;}
 .pay-form-head h2{font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#888;margin:0;}
 .pay-actions{display:flex;gap:10px;flex-wrap:wrap;}
-.btn-edit,.btn-delete{font-size:13px;font-weight:600;padding:10px 18px;border-radius:10px;cursor:pointer;font-family:inherit;transition:background .2s,border-color .2s,color .2s,transform .15s;}
-.btn-edit{background:#fff;color:#1a1a1a;border:1px solid #e0e0e0;}
-.btn-edit:hover{border-color:#c9a84c;color:#2c1a0e;background:#fffef8;}
-.btn-edit:focus-visible{outline:2px solid #c9a84c;outline-offset:2px;}
-.btn-delete{background:#fff;color:#b42318;border:1px solid #f0c4c1;}
-.btn-delete:hover{background:#fef6f6;border-color:#e85d5d;color:#8b1a12;}
-.btn-delete:focus-visible{outline:2px solid #e03131;outline-offset:2px;}
+.btn-cancel-edit{font-size:13px;font-weight:600;padding:10px 18px;border-radius:10px;cursor:pointer;font-family:inherit;background:#fff;color:#888;border:1px solid #e0e0e0;display:none;transition:background .2s,color .2s;}
+.btn-cancel-edit:hover{background:#f5f5f5;color:#1a1a1a;}
 .field{margin-bottom:20px;}
 .field label{display:block;font-size:11px;color:#888;margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase;font-weight:500;}
 .field input,.field select{width:100%;border:1px solid #e8e8e8;padding:14px 16px;font-size:15px;font-family:inherit;border-radius:10px;outline:none;transition:border-color .2s, box-shadow .2s;background:#fafafa;}
 .field input:focus,.field select:focus{border-color:#c9a84c;background:#fff;box-shadow:0 0 0 3px rgba(201,168,76,.15);}
+.field input.error-field{border-color:#e03131;box-shadow:0 0 0 3px rgba(224,49,49,.12);}
+.field-hint{font-size:11px;color:#aaa;margin-top:6px;}
 .row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media (max-width:520px){.row-2{grid-template-columns:1fr;}}
-.btn-pay{width:100%;margin-top:8px;background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);color:#fff;font-size:14px;font-weight:600;padding:16px;border:none;border-radius:12px;cursor:pointer;letter-spacing:.02em;transition:transform .15s, box-shadow .2s;}
+.btn-pay{width:100%;margin-top:8px;background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);color:#fff;font-size:14px;font-weight:600;padding:16px;border:none;border-radius:12px;cursor:pointer;letter-spacing:.02em;transition:transform .15s, box-shadow .2s,opacity .2s;}
 .btn-pay:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(0,0,0,.18);}
 .btn-pay:active{transform:translateY(0);}
+.btn-pay:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* ── Inline form error ── */
+.form-error{display:none;margin-top:16px;padding:14px 18px;border-radius:10px;background:#fef2f2;border:1px solid #fca5a5;color:#b91c1c;font-size:13px;font-weight:500;line-height:1.5;}
+.form-error.visible{display:flex;align-items:flex-start;gap:10px;}
+.form-error-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.form-error-text{flex:1;}
+.form-error-title{font-weight:700;font-size:13px;margin-bottom:2px;}
+.pay-form.has-error{border-color:#fca5a5;box-shadow:0 4px 40px rgba(185,28,28,.08);}
 
 /* ── Card preview ── */
 .payment-card-wrap{position:sticky;top:112px;perspective:1200px;}
@@ -84,21 +119,32 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
   <div class="nav-right"></div>
 </nav>
 
+<div class="toast" id="toast"></div>
+
 <main class="payment-main">
   <header class="payment-head">
-    <h1>Add payment method</h1>
-    <p>Enter your card details below.</p>
+    <h1>Payment methods</h1>
+    <p>Manage your saved payment cards. Your full card number is never stored.</p>
   </header>
+
+  <!-- Saved cards list -->
+  <section class="saved-section">
+    <p class="saved-section-title">Saved cards</p>
+    <div class="saved-cards-list" id="savedCardsList">
+      <p class="no-cards" id="noCardsMsg">Loading…</p>
+    </div>
+  </section>
 
   <div class="layout">
     <form class="pay-form" id="payForm" onsubmit="event.preventDefault();">
       <div class="pay-form-head">
-        <h2>Billing card</h2>
+        <h2 id="formTitle">Add new card</h2>
         <div class="pay-actions">
-          <button type="button" class="btn-edit" id="btnEditDetails" aria-label="Edit card details">Edit details</button>
-          <button type="button" class="btn-delete" id="btnDeleteDetails" aria-label="Delete card details">Delete</button>
+          <button type="button" class="btn-cancel-edit" id="btnCancelEdit">Cancel edit</button>
         </div>
       </div>
+
+      <input type="hidden" id="editingId" value=""/>
 
       <div class="field">
         <label for="cardName">Cardholder name</label>
@@ -108,6 +154,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
       <div class="field">
         <label for="cardNumber">Card number</label>
         <input type="text" id="cardNumber" name="cardNumber" placeholder="4242 4242 4242 4242" inputmode="numeric" autocomplete="cc-number" maxlength="19"/>
+        <p class="field-hint" id="cardNumberHint"></p>
       </div>
 
       <div class="row-2">
@@ -129,10 +176,21 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
           <option value="US">United States</option>
           <option value="GB">United Kingdom</option>
           <option value="AU">Australia</option>
+          <option value="IN">India</option>
+          <option value="SG">Singapore</option>
+          <option value="CA">Canada</option>
         </select>
       </div>
 
-      <button type="button" class="btn-pay">Save card</button>
+      <div class="form-error" id="formError" role="alert" aria-live="polite">
+        <span class="form-error-icon">&#9888;</span>
+        <div class="form-error-text">
+          <div class="form-error-title">Could not save card</div>
+          <div id="formErrorMsg"></div>
+        </div>
+      </div>
+
+      <button type="button" class="btn-pay" id="btnSave">Save card</button>
     </form>
 
     <aside class="payment-card-wrap" aria-label="Card preview">
@@ -162,131 +220,301 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 </main>
 
 <script>
-(function(){
-  var card3d=document.getElementById('card3d');
-  var numIn=document.getElementById('cardNumber');
-  var nameIn=document.getElementById('cardName');
-  var expIn=document.getElementById('expiry');
-  var cvvIn=document.getElementById('cvv');
-  var elNum=document.getElementById('previewNumber');
-  var elName=document.getElementById('previewName');
-  var elExp=document.getElementById('previewExpiry');
-  var elCvv=document.getElementById('previewCvv');
-  var elBrand=document.getElementById('cardBrand');
-  var countrySel=document.getElementById('country');
-  var btnEdit=document.getElementById('btnEditDetails');
-  var btnDelete=document.getElementById('btnDeleteDetails');
-  var payForm=document.getElementById('payForm');
+(function () {
+  'use strict';
 
-  function digitsOnly(s){return s.replace(/\D/g,'');}
+  var API = '/api/payment-cards';
 
-  function resetCardPreview(){
-    elNum.textContent='•••• •••• •••• ••••';
-    elName.textContent='YOUR NAME';
-    elExp.textContent='MM/YY';
-    elCvv.textContent='···';
-    elBrand.textContent='CARD';
-    card3d.classList.remove('flipped');
+  // ── DOM refs ──────────────────────────────────────────────────────────────
+  var card3d       = document.getElementById('card3d');
+  var numIn        = document.getElementById('cardNumber');
+  var nameIn       = document.getElementById('cardName');
+  var expIn        = document.getElementById('expiry');
+  var cvvIn        = document.getElementById('cvv');
+  var countrySel   = document.getElementById('country');
+  var editingIdIn  = document.getElementById('editingId');
+  var elNum        = document.getElementById('previewNumber');
+  var elName       = document.getElementById('previewName');
+  var elExp        = document.getElementById('previewExpiry');
+  var elCvv        = document.getElementById('previewCvv');
+  var elBrand      = document.getElementById('cardBrand');
+  var formTitle    = document.getElementById('formTitle');
+  var btnSave      = document.getElementById('btnSave');
+  var btnCancel    = document.getElementById('btnCancelEdit');
+  var listEl       = document.getElementById('savedCardsList');
+  var noCardsMsg   = document.getElementById('noCardsMsg');
+  var toastEl      = document.getElementById('toast');
+
+  // ── Toast (success only) ──────────────────────────────────────────────────
+  var toastTimer;
+  function showToast(msg) {
+    clearTimeout(toastTimer);
+    toastEl.textContent = msg;
+    toastEl.className = 'toast visible';
+    toastTimer = setTimeout(function () { toastEl.classList.remove('visible'); }, 3000);
   }
 
-  function clearAllFields(){
-    nameIn.value='';
-    numIn.value='';
-    expIn.value='';
-    cvvIn.value='';
-    if(countrySel){countrySel.value='LK';}
-    resetCardPreview();
+  // ── Inline form error ─────────────────────────────────────────────────────
+  var formErrorEl  = document.getElementById('formError');
+  var formErrorMsg = document.getElementById('formErrorMsg');
+  var payFormEl    = document.getElementById('payForm');
+
+  function showFormError(msg) {
+    // Strip the "Validation failed: " prefix if present for a cleaner display
+    var clean = msg ? msg.replace(/^Validation failed:\s*/i, '') : 'An unexpected error occurred.';
+    formErrorMsg.textContent = clean;
+    formErrorEl.classList.add('visible');
+    payFormEl.classList.add('has-error');
+    formErrorEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  function formatCardNumber(raw){
-    var d=digitsOnly(raw).slice(0,19);
-    var parts=[];
-    for(var i=0;i<d.length;i+=4)parts.push(d.slice(i,i+4));
+  function clearFormError() {
+    formErrorEl.classList.remove('visible');
+    payFormEl.classList.remove('has-error');
+    formErrorMsg.textContent = '';
+  }
+
+  // ── Utilities ─────────────────────────────────────────────────────────────
+  function digitsOnly(s) { return s.replace(/\D/g, ''); }
+
+  function formatCardNumber(raw) {
+    var d = digitsOnly(raw).slice(0, 16);
+    var parts = [];
+    for (var i = 0; i < d.length; i += 4) parts.push(d.slice(i, i + 4));
     return parts.join(' ');
   }
 
-  function detectBrand(num){
-    var d=digitsOnly(num);
-    if(/^4/.test(d))return'VISA';
-    if(/^5[1-5]/.test(d))return'MC';
-    if(/^3[47]/.test(d))return'AMEX';
-    if(/^6(?:011|5)/.test(d))return'DISC';
-    return'CARD';
+  function detectBrand(num) {
+    var d = digitsOnly(num);
+    if (/^4/.test(d))          return 'VISA';
+    if (/^5[1-5]/.test(d))     return 'MC';
+    if (/^3[47]/.test(d))      return 'AMEX';
+    if (/^6(?:011|5)/.test(d)) return 'DISC';
+    return 'CARD';
   }
 
-  function displayNumber(formatted){
-    var d=digitsOnly(formatted);
-    var groups=[];
-    for(var g=0;g<4;g++){
-      var start=g*4;
-      var chunk=d.slice(start,start+4);
-      if(chunk.length===0){groups.push('••••');continue;}
-      var line='';
-      for(var i=0;i<4;i++)line+=i<chunk.length?chunk[i]:'•';
+  function displayNumber(formatted) {
+    var d = digitsOnly(formatted);
+    var groups = [];
+    for (var g = 0; g < 4; g++) {
+      var chunk = d.slice(g * 4, g * 4 + 4);
+      var line = '';
+      for (var i = 0; i < 4; i++) line += i < chunk.length ? chunk[i] : '•';
       groups.push(line);
     }
     return groups.join(' ');
   }
 
-  numIn.addEventListener('input',function(){
-    var f=formatCardNumber(numIn.value);
-    numIn.value=f;
-    elNum.textContent=displayNumber(f)||'•••• •••• •••• ••••';
-    elBrand.textContent=detectBrand(f);
-  });
-
-  nameIn.addEventListener('input',function(){
-    var v=nameIn.value.trim().toUpperCase()||'YOUR NAME';
-    elName.textContent=v.slice(0,22)||'YOUR NAME';
-  });
-
-  function formatExpiry(raw){
-    var d=digitsOnly(raw).slice(0,4);
-    if(d.length<=2)return d;
-    return d.slice(0,2)+' / '+d.slice(2);
+  function formatExpiry(raw) {
+    var d = digitsOnly(raw).slice(0, 4);
+    if (d.length <= 2) return d;
+    return d.slice(0, 2) + ' / ' + d.slice(2);
   }
 
-  expIn.addEventListener('input',function(){
-    expIn.value=formatExpiry(expIn.value);
-    var d=digitsOnly(expIn.value);
-    if(d.length>=2)elExp.textContent=d.slice(0,2)+'/'+d.slice(2,4);
-    else elExp.textContent='MM/YY';
-  });
-
-  function cvvDisplay(len){
-    if(!len)return'···';
-    return'•'.repeat(Math.min(len,4));
+  function cvvDisplay(len) {
+    if (!len) return '···';
+    return '•'.repeat(Math.min(len, 4));
   }
 
-  cvvIn.addEventListener('input',function(){
-    cvvIn.value=digitsOnly(cvvIn.value).slice(0,4);
-    elCvv.textContent=cvvDisplay(cvvIn.value.length);
+  function brandClass(type) {
+    var m = { VISA: 'visa', MASTERCARD: 'mastercard', AMEX: 'amex', DISCOVER: 'discover' };
+    return m[type] || '';
+  }
+
+  // ── Card preview live updates ─────────────────────────────────────────────
+  numIn.addEventListener('input', function () {
+    var f = formatCardNumber(numIn.value);
+    numIn.value = f;
+    elNum.textContent = displayNumber(f) || '•••• •••• •••• ••••';
+    elBrand.textContent = detectBrand(f);
   });
 
-  cvvIn.addEventListener('focus',function(){card3d.classList.add('flipped');});
-  cvvIn.addEventListener('blur',function(){card3d.classList.remove('flipped');});
+  nameIn.addEventListener('input', function () {
+    elName.textContent = (nameIn.value.trim().toUpperCase() || 'YOUR NAME').slice(0, 22);
+  });
 
-  // Optional: flip on focus of expiry too could stay front — keep front for number/name/exp
-  numIn.addEventListener('focus',function(){card3d.classList.remove('flipped');});
-  nameIn.addEventListener('focus',function(){card3d.classList.remove('flipped');});
-  expIn.addEventListener('focus',function(){card3d.classList.remove('flipped');});
+  expIn.addEventListener('input', function () {
+    expIn.value = formatExpiry(expIn.value);
+    var d = digitsOnly(expIn.value);
+    elExp.textContent = d.length >= 2 ? d.slice(0, 2) + '/' + d.slice(2, 4) : 'MM/YY';
+  });
 
-  btnEdit.addEventListener('click',function(){
-    [nameIn,numIn,expIn,cvvIn,countrySel].forEach(function(el){
-      if(!el)return;
-      el.removeAttribute('readonly');
-      el.removeAttribute('disabled');
+  cvvIn.addEventListener('input', function () {
+    cvvIn.value = digitsOnly(cvvIn.value).slice(0, 4);
+    elCvv.textContent = cvvDisplay(cvvIn.value.length);
+  });
+
+  cvvIn.addEventListener('focus',  function () { card3d.classList.add('flipped'); });
+  cvvIn.addEventListener('blur',   function () { card3d.classList.remove('flipped'); });
+  numIn.addEventListener('focus',  function () { card3d.classList.remove('flipped'); });
+  nameIn.addEventListener('focus', function () { card3d.classList.remove('flipped'); });
+  expIn.addEventListener('focus',  function () { card3d.classList.remove('flipped'); });
+
+  // Clear error banner as soon as the user starts correcting any field
+  [nameIn, numIn, expIn, cvvIn, countrySel].forEach(function (el) {
+    el.addEventListener('input', clearFormError);
+    el.addEventListener('change', clearFormError);
+  });
+
+  // ── Reset form ────────────────────────────────────────────────────────────
+  function resetForm() {
+    editingIdIn.value = '';
+    nameIn.value  = '';
+    numIn.value   = '';
+    expIn.value   = '';
+    cvvIn.value   = '';
+    countrySel.value = 'LK';
+    document.getElementById('cardNumberHint').textContent = '';
+    formTitle.textContent   = 'Add new card';
+    btnSave.textContent     = 'Save card';
+    btnCancel.style.display = 'none';
+    elNum.textContent    = '•••• •••• •••• ••••';
+    elName.textContent   = 'YOUR NAME';
+    elExp.textContent    = 'MM/YY';
+    elCvv.textContent    = '···';
+    elBrand.textContent  = 'CARD';
+    card3d.classList.remove('flipped');
+    clearFormError();
+    Array.from(listEl.querySelectorAll('.saved-card-item.editing'))
+         .forEach(function (el) { el.classList.remove('editing'); });
+  }
+
+  btnCancel.addEventListener('click', resetForm);
+
+  // ── Load and render saved cards ───────────────────────────────────────────
+  function loadCards() {
+    fetch(API)
+      .then(function (r) { return r.json(); })
+      .then(function (cards) { renderList(cards); })
+      .catch(function () { noCardsMsg.textContent = 'Could not load cards.'; });
+  }
+
+  function renderList(cards) {
+    if (!cards || cards.length === 0) {
+      listEl.innerHTML = '<p class="no-cards" id="noCardsMsg">No saved cards yet. Add one below.</p>';
+      return;
+    }
+    listEl.innerHTML = cards.map(function (c) {
+      var bc = brandClass(c.cardType);
+      var label = c.cardType === 'MASTERCARD' ? 'MC' : c.cardType;
+      return '<div class="saved-card-item" id="item-' + c.id + '">'
+        + '  <div class="saved-card-left">'
+        + '    <div class="saved-card-brand-badge ' + bc + '">' + label + '</div>'
+        + '    <div class="saved-card-info">'
+        + '      <div class="saved-card-number">' + c.maskedNumber + '</div>'
+        + '      <div class="saved-card-meta">' + c.cardholderName
+        +          ' &nbsp;·&nbsp; Expires ' + c.expiryDisplay + '</div>'
+        + '    </div>'
+        + '  </div>'
+        + '  <div class="saved-card-right">'
+        + '    <button class="btn-item-edit" onclick="editCard(\'' + c.id + '\')">Edit</button>'
+        + '    <button class="btn-item-delete" onclick="deleteCard(\'' + c.id + '\')">Delete</button>'
+        + '  </div>'
+        + '</div>';
+    }).join('');
+  }
+
+  // ── Edit a card ───────────────────────────────────────────────────────────
+  window.editCard = function (id) {
+    fetch(API + '/' + id)
+      .then(function (r) { return r.json(); })
+      .then(function (card) {
+        resetForm();
+        editingIdIn.value = card.id;
+        nameIn.value      = card.cardholderName;
+        // Show only the masked number in the number field for reference
+        numIn.value       = '';
+        document.getElementById('cardNumberHint').textContent =
+            'Current: ' + card.maskedNumber + ' — Enter a new number to replace it, or leave blank to keep.';
+        expIn.value       = String(card.expiryMonth).padStart(2, '0') + ' / ' + String(card.expiryYear).padStart(2, '0');
+        countrySel.value  = card.country;
+        cvvIn.value       = '';
+
+        // Update preview
+        elName.textContent  = card.cardholderName.toUpperCase().slice(0, 22);
+        elNum.textContent   = card.maskedNumber;
+        elBrand.textContent = card.cardType === 'MASTERCARD' ? 'MC' : card.cardType;
+        elExp.textContent   = String(card.expiryMonth).padStart(2, '0') + '/' + String(card.expiryYear).padStart(2, '0');
+
+        formTitle.textContent   = 'Edit card';
+        btnSave.textContent     = 'Update card';
+        btnCancel.style.display = 'inline-flex';
+
+        // Highlight list item
+        Array.from(listEl.querySelectorAll('.saved-card-item.editing'))
+             .forEach(function (el) { el.classList.remove('editing'); });
+        var item = document.getElementById('item-' + id);
+        if (item) item.classList.add('editing');
+
+        document.getElementById('payForm').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      })
+      .catch(function () { showToast('Failed to load card details.', true); });
+  };
+
+  // ── Delete a card ─────────────────────────────────────────────────────────
+  window.deleteCard = function (id) {
+    if (!window.confirm('Delete this payment card? This cannot be undone.')) return;
+    fetch(API + '/' + id, { method: 'DELETE' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.success) {
+          if (editingIdIn.value === id) resetForm();
+          showToast('Card deleted.');
+          loadCards();
+        } else {
+          showToast('Delete failed: ' + (data.message || 'Unknown error.'));
+        }
+      })
+      .catch(function () { showToast('Network error. Please try again.'); });
+  };
+
+  // ── Save / Update ─────────────────────────────────────────────────────────
+  btnSave.addEventListener('click', function () {
+    var id      = editingIdIn.value;
+    var rawDigs = digitsOnly(numIn.value);
+    var body    = JSON.stringify({
+      cardholderName: nameIn.value,
+      cardNumber:     rawDigs,          // empty string on edit = keep existing
+      expiry:         expIn.value,
+      cvv:            cvvIn.value,
+      country:        countrySel.value
     });
-    payForm.scrollIntoView({behavior:'smooth',block:'nearest'});
-    nameIn.focus({preventScroll:true});
+
+    var method = id ? 'PUT'  : 'POST';
+    var url    = id ? API + '/' + id : API;
+    var wasEdit = !!id;
+
+    btnSave.disabled = true;
+    btnSave.textContent = wasEdit ? 'Updating…' : 'Saving…';
+
+    clearFormError();
+
+    fetch(url, {
+      method:  method,
+      headers: { 'Content-Type': 'application/json' },
+      body:    body
+    })
+    .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
+    .then(function (result) {
+      if (result.ok) {
+        resetForm();
+        loadCards();
+        showToast(wasEdit ? 'Card updated successfully.' : 'Card saved successfully.');
+      } else {
+        showFormError(result.data.message || 'Something went wrong.');
+      }
+    })
+    .catch(function () { showFormError('Network error. Could not reach the server.'); })
+    .finally(function () {
+      btnSave.disabled = false;
+      btnSave.textContent = editingIdIn.value ? 'Update card' : 'Save card';
+    });
   });
 
-  btnDelete.addEventListener('click',function(){
-    if(!window.confirm('Clear all card details from this form?'))return;
-    clearAllFields();
-    nameIn.focus();
-  });
-})();
+  // ── Init ──────────────────────────────────────────────────────────────────
+  loadCards();
+
+}());
 </script>
 </body>
 </html>

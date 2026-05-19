@@ -1,8 +1,10 @@
 package com.cartracker;
 
+import com.cartracker.controller.paymentcard.PaymentCardController;
 import com.cartracker.model.user.Customer;
 import com.cartracker.model.user.User;
 import com.cartracker.model.vehicle.Vehicle;
+import com.cartracker.service.paymentcard.PaymentCardService;
 import com.cartracker.service.user.UserService;
 import com.cartracker.service.vehicle.VehicleService;
 import com.sun.net.httpserver.HttpExchange;
@@ -20,12 +22,14 @@ import java.util.Optional;
 
 public class WebServer {
 
-    private final UserService userService;
-    private final VehicleService vehicleService;
+    private final UserService        userService;
+    private final VehicleService     vehicleService;
+    private final PaymentCardService paymentCardService;
 
-    public WebServer(UserService userService, VehicleService vehicleService) {
-        this.userService = userService;
-        this.vehicleService = vehicleService;
+    public WebServer(UserService userService, VehicleService vehicleService, PaymentCardService paymentCardService) {
+        this.userService        = userService;
+        this.vehicleService     = vehicleService;
+        this.paymentCardService = paymentCardService;
     }
 
     public void start() throws IOException {
@@ -36,6 +40,7 @@ public class WebServer {
         server.createContext("/api/login", new LoginHandler());
         server.createContext("/api/vehicles", new VehicleHandler());
         server.createContext("/api/user-id", new UserIdHandler());
+        server.createContext("/api/payment-cards", new PaymentCardController(paymentCardService));
 
         server.setExecutor(null);
         server.start();
