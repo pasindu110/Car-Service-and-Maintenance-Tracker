@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Appointment Details – CarTracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --gold:#c9a84c; --gold-light:#e8c97a;
+  --dark:#1a1a1a; --brown:#2c1a0e;
+  --bg:#f6f5f2;   --white:#fff;
+  --border:#ebebeb; --muted:#888;
+  --danger:#e74c3c; --success:#27ae60;
+}
+body{font-family:'Inter',sans-serif;color:var(--dark);background:var(--bg);min-height:100vh;}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 60px;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.05);}
+.nav-logo{font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dark);text-decoration:none;}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{font-size:13px;color:#444;text-decoration:none;transition:color .2s;padding-bottom:2px;}
+.nav-links a:hover{color:var(--dark);}
+.nav-links a.active{color:var(--dark);font-weight:600;border-bottom:2px solid var(--gold);}
+.nav-right{display:flex;align-items:center;gap:16px;}
+.btn-login{font-size:13px;color:#444;text-decoration:none;}
+
+/* HERO BANNER */
+.hero{background:var(--brown);padding:48px 60px 40px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;right:-80px;top:-80px;width:350px;height:350px;border-radius:50%;border:80px solid rgba(201,168,76,.08);}
+.hero::after{content:'';position:absolute;right:120px;bottom:-60px;width:200px;height:200px;border-radius:50%;border:50px solid rgba(201,168,76,.06);}
+.hero-inner{position:relative;z-index:1;}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.45);margin-bottom:16px;}
+.breadcrumb a{color:rgba(255,255,255,.45);text-decoration:none;transition:.2s;}
+.breadcrumb a:hover{color:var(--gold);}
+.breadcrumb i{font-size:10px;}
+.hero h1{font-family:'Playfair Display',serif;font-size:32px;color:#fff;margin-bottom:6px;}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.5);}
+.status-hero{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;border-radius:2px;margin-top:16px;}
+.status-hero.PENDING{background:rgba(201,168,76,.2);color:#f0c040;}
+.status-hero.CONFIRMED{background:rgba(41,128,185,.2);color:#5dade2;}
+.status-hero.IN_PROGRESS{background:rgba(156,39,176,.2);color:#d7bde2;}
+.status-hero.COMPLETED{background:rgba(39,174,96,.2);color:#58d68d;}
+.status-hero.CANCELLED{background:rgba(231,76,60,.2);color:#f1948a;}
+
+/* MAIN */
+.main{max-width:900px;margin:36px auto;padding:0 24px 80px;}
+
+/* BACK BUTTON */
+.back-btn{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;margin-bottom:28px;transition:.2s;cursor:pointer;background:none;border:none;padding:0;}
+.back-btn:hover{color:var(--dark);}
+
+/* CARDS GRID */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.detail-card{background:var(--white);border:1px solid var(--border);padding:28px;transition:box-shadow .2s;}
+.detail-card:hover{box-shadow:0 4px 24px rgba(0,0,0,.07);}
+.detail-card.full{grid-column:1/-1;}
+.card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.card-title i{color:var(--gold);}
+
+.info-row{display:flex;justify-content:space-between;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--border);}
+.info-row:last-child{border-bottom:none;}
+.info-label{font-size:12px;color:var(--muted);font-weight:500;min-width:110px;}
+.info-value{font-size:13px;font-weight:600;color:var(--dark);text-align:right;word-break:break-all;}
+
+/* TIMELINE */
+.timeline{display:flex;align-items:center;gap:0;margin-top:8px;overflow-x:auto;padding-bottom:4px;}
+.tl-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:80px;}
+.tl-dot{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);position:relative;z-index:1;transition:.3s;}
+.tl-dot.active{border-color:var(--gold);background:var(--gold);color:#fff;}
+.tl-dot.done{border-color:var(--success);background:var(--success);color:#fff;}
+.tl-dot.cancelled{border-color:var(--danger);background:var(--danger);color:#fff;}
+.tl-label{font-size:10px;color:var(--muted);margin-top:8px;text-align:center;font-weight:500;letter-spacing:.3px;}
+.tl-label.active{color:var(--gold);font-weight:700;}
+.tl-label.done{color:var(--success);}
+.tl-connector{flex:1;height:2px;background:var(--border);margin-top:-16px;}
+.tl-connector.done{background:var(--success);}
+.tl-connector.active{background:linear-gradient(90deg,var(--success),var(--gold));}
+
+/* NOTES BOX */
+.notes-box{background:var(--bg);border-left:3px solid var(--gold);padding:14px 18px;font-size:13px;color:#555;line-height:1.7;font-style:italic;}
+.notes-empty{color:var(--muted);font-style:italic;font-size:13px;}
+
+/* ACTION BUTTONS */
+.actions-bar{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.5px;border:none;transition:.2s;}
+.btn-dark{background:var(--dark);color:#fff;}
+.btn-dark:hover{background:#333;}
+.btn-gold{background:var(--gold);color:#fff;}
+.btn-gold:hover{background:var(--gold-light);color:var(--dark);}
+.btn-red{background:var(--danger);color:#fff;}
+.btn-red:hover{background:#c0392b;}
+.btn-outline{background:#fff;color:var(--dark);border:1px solid var(--border);}
+.btn-outline:hover{border-color:var(--dark);}
+
+/* ID BADGE */
+.id-badge{font-family:monospace;font-size:12px;background:var(--bg);padding:4px 10px;color:var(--muted);display:inline-block;margin-top:4px;}
+
+/* STATUS BADGE inline */
+.sb{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;}
+.sb.PENDING{background:rgba(201,168,76,.12);color:#a07c1a;}
+.sb.CONFIRMED{background:rgba(41,128,185,.1);color:#1a6a9a;}
+.sb.IN_PROGRESS{background:rgba(156,39,176,.1);color:#7b1fa2;}
+.sb.COMPLETED{background:rgba(39,174,96,.1);color:#1a7a4a;}
+.sb.CANCELLED{background:rgba(231,76,60,.1);color:#c0392b;}
+
+@media(max-width:760px){
+  .detail-grid{grid-template-columns:1fr;}
+  .detail-card.full{grid-column:1;}
+  nav{padding:18px 20px;}
+  .hero{padding:32px 20px;}
+  .main{padding:0 16px 60px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">CarTracker</a>
+  <ul class="nav-links">
+    <li><a href="index.html#services">Services</a></li>
+    <li><a href="index.html#fleet">Fleet</a></li>
+    <li><a href="appointments.html" class="active">Appointments</a></li>
+    <li><a href="index.html#reports">Reports</a></li>
+  </ul>
+  <div class="nav-right" id="navRight">
+    <a class="btn-login" href="login.html">Log in</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="breadcrumb">
+      <a href="appointments.html"><i class="fas fa-calendar-alt"></i> Appointments</a>
+      <i class="fas fa-chevron-right"></i>
+      <span id="heroApptId">Details</span>
+    </div>
+    <h1 id="heroService">Appointment Details</h1>
+    <div class="hero-sub" id="heroDate">Loading…</div>
+    <div id="heroStatus"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <button class="back-btn" onclick="history.back()">
+    <i class="fas fa-arrow-left"></i> Back to Appointments
+  </button>
+
+  <!-- Timeline -->
+  <div class="detail-card full" style="margin-bottom:20px;" id="timelineCard">
+    <div class="card-title"><i class="fas fa-route"></i> Service Progress</div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <div class="detail-grid">
+
+    <!-- Appointment Info -->
+    <div class="detail-card">
+      <div class="card-title"><i class="fas fa-calendar-check"></i> Appointment Info</div>
+      <div class="info-row"><span class="info-label">Appointment ID</span><span class="info-value" id="dApptId">—</span></div>
+      <div class="info-row"><span class="info-label">Status</span><span class="info-value" id="dStatus">—</span></div>
+      <div class="info-row"><span class="info-label">Service Type</span><span class="info-value" id="dService">—</span></div>
+      <div class="info-row"><span class="info-label">Scheduled</span><span class="info-value" id="dScheduled">—</span></div>
+      <div class="info-row"><span class="info-label">Created</span><span class="info-value" id="dCreated">—</span></div>
+    </div>
+
+    <!-- Vehicle & Customer -->
+    <div class="detail-card">
+      <div class="card-title"><i class="fas fa-car"></i> Vehicle & Customer</div>
+      <div class="info-row"><span class="info-label">Customer ID</span><span class="info-value" id="dCustomer">—</span></div>
+      <div class="info-row"><span class="info-label">Vehicle ID</span><span class="info-value" id="dVehicle">—</span></div>
+      <div class="info-row"><span class="info-label">Mechanic</span><span class="info-value" id="dMechanic">—</span></div>
+      <div class="info-row"><span class="info-label">Service Record</span><span class="info-value" id="dRecord">—</span></div>
+    </div>
+
+    <!-- Notes -->
+    <div class="detail-card full">
+      <div class="card-title"><i class="fas fa-sticky-note"></i> Notes</div>
+      <div id="dNotes"></div>
+    </div>
+
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="actions-bar" id="actionsBar"></div>
+</div>
+
+<script>
+const STATUS_ICONS = {
+  PENDING:'fa-clock', CONFIRMED:'fa-check-circle',
+  IN_PROGRESS:'fa-spinner', COMPLETED:'fa-flag-checkered', CANCELLED:'fa-times-circle'
+};
+
+const STEPS = [
+  {key:'PENDING',    label:'Pending',     icon:'fa-clock'},
+  {key:'CONFIRMED',  label:'Confirmed',   icon:'fa-check-circle'},
+  {key:'IN_PROGRESS',label:'In Progress', icon:'fa-spinner'},
+  {key:'COMPLETED',  label:'Completed',   icon:'fa-flag-checkered'}
+];
+
+function fmt(dt) {
+  if (!dt) return '—';
+  return new Date(dt).toLocaleString('en', {
+    weekday:'short', month:'short', day:'numeric',
+    year:'numeric', hour:'2-digit', minute:'2-digit'
+  });
+}
+
+function buildTimeline(status) {
+  if (status === 'CANCELLED') {
+    document.getElementById('timeline').innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;color:var(--danger);font-size:13px;font-weight:600;padding:8px 0;">
+        <i class="fas fa-times-circle" style="font-size:22px;"></i> This appointment has been cancelled.
+      </div>`;
+    return;
+  }
+  const order = ['PENDING','CONFIRMED','IN_PROGRESS','COMPLETED'];
+  const cur = order.indexOf(status);
+  let html = '';
+  STEPS.forEach((s, i) => {
+    const isDone   = i < cur;
+    const isActive = i === cur;
+    const cls = isDone ? 'done' : isActive ? 'active' : '';
+    if (i > 0) html += `<div class="tl-connector ${isDone ? 'done' : isActive ? 'active' : ''}"></div>`;
+    html += `
+      <div class="tl-step">
+        <div class="tl-dot ${cls}"><i class="fas ${s.icon}"></i></div>
+        <div class="tl-label ${cls}">${s.label}</div>
+      </div>`;
+  });
+  document.getElementById('timeline').innerHTML = html;
+}
+
+function renderActions(appt) {
+  const bar = document.getElementById('actionsBar');
+  if (appt.status === 'CANCELLED' || appt.status === 'COMPLETED') {
+    bar.innerHTML = `<a href="appointments.html" class="btn btn-outline"><i class="fas fa-list"></i> All Appointments</a>`;
+    return;
+  }
+  bar.innerHTML = `
+    <a href="appointments.html" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+    <button class="btn btn-gold" onclick="doReschedule()"><i class="fas fa-calendar-alt"></i> Reschedule</button>
+    <button class="btn btn-red" onclick="doCancel()"><i class="fas fa-times"></i> Cancel Appointment</button>`;
+}
+
+function doReschedule() {
+  const appt = JSON.parse(sessionStorage.getItem('selectedAppointment') || 'null');
+  if (!appt) return;
+  const newDate = prompt('Enter new date (YYYY-MM-DD):', appt.scheduledAt.slice(0,10));
+  if (!newDate) return;
+  const newTime = prompt('Enter new time (HH:MM):', appt.scheduledAt.slice(11,16));
+  if (!newTime) return;
+  alert('Reschedule feature coming soon! (Backend PUT endpoint needed)');
+}
+
+function doCancel() {
+  if (!confirm('Are you sure you want to cancel this appointment?')) return;
+  alert('Cancel feature coming soon! (Backend DELETE endpoint needed)');
+}
+
+// ── INIT ──
+const navRight = document.getElementById('navRight');
+if (localStorage.getItem('userLoggedIn') === 'true') {
+  const userName = localStorage.getItem('userName') || 'User';
+  const initial  = userName.charAt(0).toUpperCase();
+  navRight.innerHTML = `
+    <a href="profile.html" style="font-size:13px;font-weight:600;color:var(--dark);text-decoration:none;display:flex;align-items:center;gap:8px;">
+      <div style="width:32px;height:32px;background:var(--gold);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">${initial}</div>
+      ${userName}
+    </a>`;
+}
+
+const raw = sessionStorage.getItem('selectedAppointment');
+if (!raw) {
+  document.querySelector('.main').innerHTML = `
+    <div style="text-align:center;padding:80px 20px;color:var(--muted);">
+      <i class="fas fa-calendar-times" style="font-size:52px;color:var(--border);display:block;margin-bottom:20px;"></i>
+      <p style="font-size:15px;margin-bottom:20px;">No appointment selected.</p>
+      <a href="appointments.html" class="btn btn-dark" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;font-size:13px;font-weight:600;text-decoration:none;background:var(--dark);color:#fff;">
+        <i class="fas fa-arrow-left"></i> Go to Appointments
+      </a>
+    </div>`;
+} else {
+  const a = JSON.parse(raw);
+
+  // Hero
+  document.getElementById('heroApptId').textContent  = a.id;
+  document.getElementById('heroService').textContent  = a.serviceType;
+  document.getElementById('heroDate').textContent     = fmt(a.scheduledAt);
+  document.getElementById('heroStatus').innerHTML     = `<div class="status-hero ${a.status}"><i class="fas ${STATUS_ICONS[a.status]}"></i> ${a.status}</div>`;
+  document.title = `${a.serviceType} – CarTracker`;
+
+  // Info rows
+  document.getElementById('dApptId').innerHTML    = `<span class="id-badge">${a.id}</span>`;
+  document.getElementById('dStatus').innerHTML    = `<span class="sb ${a.status}"><i class="fas ${STATUS_ICONS[a.status]}"></i> ${a.status}</span>`;
+  document.getElementById('dService').textContent = a.serviceType;
+  document.getElementById('dScheduled').textContent = fmt(a.scheduledAt);
+  document.getElementById('dCreated').textContent  = fmt(a.createdAt);
+
+  document.getElementById('dCustomer').innerHTML  = `<span class="id-badge">${a.customerId}</span>`;
+  document.getElementById('dVehicle').innerHTML   = `<span class="id-badge">${a.vehicleId}</span>`;
+  document.getElementById('dMechanic').textContent = a.mechanicId || 'Not assigned yet';
+  document.getElementById('dRecord').textContent   = a.serviceRecordId || 'Not linked yet';
+
+  const notesEl = document.getElementById('dNotes');
+  notesEl.innerHTML = a.notes
+    ? `<div class="notes-box">${a.notes}</div>`
+    : `<span class="notes-empty">No notes provided.</span>`;
+
+  // Timeline & actions
+  buildTimeline(a.status);
+  renderActions(a);
+}
+</script>
+</body>
+</html>

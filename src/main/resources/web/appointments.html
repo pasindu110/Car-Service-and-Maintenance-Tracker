@@ -510,30 +510,13 @@ function createAppointment() {
   });
 }
 
-// getAppointment() – called when card is clicked
+// getAppointment() – navigate to detail page
 function getAppointment(id) {
   const appt = appointments.find(a => a.id === id);
   if (!appt) return;
-
-  selectedApptId = id;
-
-  // Highlight selected card
-  document.querySelectorAll('.appt-card').forEach(c => c.classList.remove('selected'));
-  const card = document.querySelector(`.appt-card[data-id="${id}"]`);
-  if (card) card.classList.add('selected');
-
-  // Populate detail panel
-  document.getElementById('dp-service').textContent  = appt.serviceType;
-  document.getElementById('dp-id').textContent       = appt.id;
-  document.getElementById('dp-status').innerHTML     = `<span class="status-badge ${appt.status}"><i class="fas ${STATUS_ICONS[appt.status]}"></i> ${appt.status}</span>`;
-  document.getElementById('dp-datetime').textContent = formatDateTime(appt.scheduledAt);
-  document.getElementById('dp-vehicle').textContent  = appt.vehicleId;
-  document.getElementById('dp-customer').textContent = appt.customerId;
-  document.getElementById('dp-mechanic').textContent = appt.mechanicId || 'Not assigned yet';
-  document.getElementById('dp-notes').textContent    = appt.notes || '—';
-  document.getElementById('dp-created').textContent  = formatDateTime(appt.createdAt);
-
-  document.getElementById('detailPanel').classList.remove('hidden');
+  // Store full appointment data for the detail page
+  sessionStorage.setItem('selectedAppointment', JSON.stringify(appt));
+  window.location.href = 'appointment-detail.html?id=' + encodeURIComponent(id);
 }
 
 // updateAppointment() – reschedule
