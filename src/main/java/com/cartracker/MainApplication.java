@@ -11,6 +11,8 @@ import com.cartracker.repository.user.JdbcUserRepository;
 import com.cartracker.repository.user.UserRepository;
 import com.cartracker.repository.vehicle.JdbcVehicleRepository;
 import com.cartracker.repository.vehicle.VehicleRepository;
+import com.cartracker.service.appointment.AppointmentService;
+import com.cartracker.service.appointment.AppointmentServiceImpl;
 
 import java.sql.Connection;
 
@@ -50,9 +52,10 @@ public class MainApplication {
 
             // 3. Initialize Services
             com.cartracker.service.user.UserService userService = new com.cartracker.service.user.UserServiceImpl(userRepository);
+            AppointmentService appointmentService = new AppointmentServiceImpl(appointmentRepository);
 
             // 4. Start Web Server
-            WebServer webServer = new WebServer(userService);
+            WebServer webServer = new WebServer(userService, appointmentService, vehicleRepository);
             webServer.start();
 
             System.out.println("\n[System] Application is ready! Open http://localhost:8080 in your browser.");

@@ -16,6 +16,7 @@ public interface VehicleRepository {
     Optional<Vehicle>   findById(String id);
     Optional<Vehicle>   findByLicensePlate(String plate);
     List<Vehicle>       findAll();
+    List<Vehicle>       findByOwnerId(String ownerId);
     Vehicle             update(Vehicle vehicle);
     boolean             deleteById(String id);
 }

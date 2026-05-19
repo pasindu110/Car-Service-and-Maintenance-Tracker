@@ -75,6 +75,19 @@ public class JdbcVehicleRepository implements VehicleRepository {
     }
 
     @Override
+    public List<Vehicle> findByOwnerId(String ownerId) {
+        List<Vehicle> list = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM vehicles WHERE owner_id = ?")) {
+            ps.setString(1, ownerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) list.add(mapRow(rs));
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching vehicles by owner: " + e.getMessage(), e);
+        }
+        return list;
+    }
+
+    @Override
     public Vehicle update(Vehicle vehicle) {
         String sql = "UPDATE vehicles SET owner_id=?, license_plate=?, make=?, model=?, year=?, color=?, mileage=?, fuel_type=?, updated_at=? WHERE id=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {

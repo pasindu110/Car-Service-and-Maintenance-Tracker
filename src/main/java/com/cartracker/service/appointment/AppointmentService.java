@@ -13,6 +13,7 @@ public interface AppointmentService {
 
     Appointment          book(Appointment appointment);
     Optional<Appointment> findById(String id);
+    List<Appointment>    findAll();
     List<Appointment>    findByCustomer(String customerId);
     List<Appointment>    findByMechanic(String mechanicId);
     List<Appointment>    findByDate(LocalDateTime date);

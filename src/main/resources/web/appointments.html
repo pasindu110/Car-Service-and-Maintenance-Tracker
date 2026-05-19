@@ -320,11 +320,14 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 6
       <div class="form-row">
         <div class="form-group">
           <label>Customer ID</label>
-          <input type="text" id="book-customerId" placeholder="e.g. CUST-001" required/>
+          <input type="text" id="book-customerId" placeholder="Auto-filled on login" readonly
+                 style="background:#f0f0f0;cursor:not-allowed;" title="Auto-filled from your account"/>
         </div>
         <div class="form-group">
-          <label>Vehicle ID</label>
-          <input type="text" id="book-vehicleId" placeholder="e.g. VEH-042" required/>
+          <label>Select Vehicle</label>
+          <select id="book-vehicleId" required>
+            <option value="">Loading your vehicles…</option>
+          </select>
         </div>
       </div>
       <div class="form-group">
@@ -422,26 +425,41 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 6
 
 <script>
 // ══════════════════════════════════════════════════
-// DATA LAYER – mock appointments (replace with real API calls)
+// DATA LAYER – fetched from backend API
 // ══════════════════════════════════════════════════
 const SERVICE_TYPES = ['Oil Change','Brake Service','Tyre Rotation','Full Diagnostic','Full Service','Battery Check'];
 const STATUSES = ['PENDING','CONFIRMED','IN_PROGRESS','COMPLETED','CANCELLED'];
 const STATUS_ICONS = {PENDING:'fa-clock',CONFIRMED:'fa-check-circle',IN_PROGRESS:'fa-spinner',COMPLETED:'fa-flag-checkered',CANCELLED:'fa-times-circle'};
 
-let appointments = [
-  {id:'APT-001',customerId:'CUST-101',vehicleId:'VEH-042',mechanicId:'MECH-003',scheduledAt:'2026-05-08T09:00',serviceType:'Oil Change',notes:'Please use synthetic oil.',status:'CONFIRMED',createdAt:'2026-05-01T10:30'},
-  {id:'APT-002',customerId:'CUST-101',vehicleId:'VEH-042',mechanicId:null,scheduledAt:'2026-05-12T14:30',serviceType:'Brake Service',notes:'Front brakes squeaking badly.',status:'PENDING',createdAt:'2026-05-03T09:15'},
-  {id:'APT-003',customerId:'CUST-104',vehicleId:'VEH-017',mechanicId:'MECH-001',scheduledAt:'2026-04-28T11:00',serviceType:'Full Diagnostic',notes:'',status:'COMPLETED',createdAt:'2026-04-20T08:00'},
-  {id:'APT-004',customerId:'CUST-107',vehicleId:'VEH-033',mechanicId:null,scheduledAt:'2026-05-15T10:00',serviceType:'Tyre Rotation',notes:'',status:'PENDING',createdAt:'2026-05-04T14:50'},
-  {id:'APT-005',customerId:'CUST-112',vehicleId:'VEH-058',mechanicId:'MECH-002',scheduledAt:'2026-05-06T15:00',serviceType:'Battery Check',notes:'Car struggles to start in mornings.',status:'IN_PROGRESS',createdAt:'2026-05-05T11:00'},
-  {id:'APT-006',customerId:'CUST-103',vehicleId:'VEH-020',mechanicId:null,scheduledAt:'2026-04-25T09:30',serviceType:'Full Service',notes:'Annual service.',status:'CANCELLED',createdAt:'2026-04-18T16:00'},
-  {id:'APT-007',customerId:'CUST-118',vehicleId:'VEH-071',mechanicId:'MECH-003',scheduledAt:'2026-05-20T13:00',serviceType:'Engine Tune-Up',notes:'',status:'CONFIRMED',createdAt:'2026-05-05T09:00'},
-];
-
+let appointments = [];
 let currentFilter = 'ALL';
 let selectedApptId = null;
-let calYear = 2026, calMonth = 4; // 0-indexed: 4 = May
+let calYear = new Date().getFullYear(), calMonth = new Date().getMonth();
 let selectedCalDay = null;
+
+// Load from backend
+function loadAppointments() {
+  fetch('/api/appointments')
+    .then(r => r.json())
+    .then(data => {
+      // Normalise scheduledAt: backend returns "2026-05-08T09:00" or full ISO
+      appointments = data.map(a => ({
+        ...a,
+        scheduledAt: a.scheduledAt.substring(0, 16) // keep "YYYY-MM-DDTHH:mm"
+      }));
+      renderAppointments();
+      updateStats();
+      renderCalendar();
+      renderTimeSlots(new Date());
+    })
+    .catch(err => {
+      console.warn('Could not reach API, using empty list.', err);
+      renderAppointments();
+      updateStats();
+      renderCalendar();
+      renderTimeSlots(new Date());
+    });
+}
 
 // ══════════════════════════════════════════════════
 // CRUD OPERATIONS
@@ -460,25 +478,36 @@ function createAppointment() {
     showToast('Please fill all required fields.','error'); return;
   }
 
-  const newAppt = {
-    id: 'APT-' + String(appointments.length + 1).padStart(3,'0'),
-    customerId, vehicleId,
-    mechanicId: null,
+  const payload = {
+    customerId,
+    vehicleId,
+    serviceType,
     scheduledAt: date + 'T' + time,
-    serviceType, notes,
-    status: 'PENDING',
-    createdAt: new Date().toISOString().slice(0,16)
+    notes
   };
 
-  // API call placeholder:
-  // fetch('/api/appointments', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(newAppt) })
-
-  appointments.push(newAppt);
-  closeModal('bookModal');
-  renderAppointments();
-  updateStats();
-  renderCalendar();
-  showToast('Appointment booked successfully!','success');
+  fetch('/api/appointments', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.success) {
+      const a = res.appointment;
+      appointments.push({ ...a, scheduledAt: a.scheduledAt.substring(0,16) });
+      closeModal('bookModal');
+      renderAppointments();
+      updateStats();
+      renderCalendar();
+      showToast('Appointment booked successfully!','success');
+    } else {
+      showToast('Error: ' + res.message, 'error');
+    }
+  })
+  .catch(err => {
+    showToast('Network error: ' + err.message, 'error');
+  });
 }
 
 // getAppointment() – called when card is clicked
@@ -616,9 +645,7 @@ function updateStats() {
 }
 
 function refreshAppointments() {
-  renderAppointments();
-  updateStats();
-  renderCalendar();
+  loadAppointments();
   showToast('Appointments refreshed.','info');
 }
 
@@ -699,6 +726,38 @@ function openBookModal() {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('book-date').min = today;
   document.getElementById('book-date').value = today;
+
+  // Auto-fill Customer ID from logged-in user's real DB id
+  const userId = localStorage.getItem('userId');
+  const customerField = document.getElementById('book-customerId');
+  if (userId) {
+    customerField.value = userId;
+  } else {
+    customerField.value = '';
+    customerField.placeholder = 'Login required';
+  }
+
+  // Load user's vehicles from backend and populate dropdown
+  const vehicleSelect = document.getElementById('book-vehicleId');
+  vehicleSelect.innerHTML = '<option value="">Loading vehicles…</option>';
+
+  const ownerParam = userId ? `?ownerId=${encodeURIComponent(userId)}` : '';
+  fetch(`/api/vehicles${ownerParam}`)
+    .then(r => r.json())
+    .then(vehicles => {
+      if (!Array.isArray(vehicles) || vehicles.length === 0) {
+        vehicleSelect.innerHTML = '<option value="">No vehicles found – add a vehicle first</option>';
+      } else {
+        vehicleSelect.innerHTML = '<option value="">Select a vehicle…</option>' +
+          vehicles.map(v =>
+            `<option value="${v.id}">${v.year} ${v.make} ${v.model} (${v.licensePlate})</option>`
+          ).join('');
+      }
+    })
+    .catch(() => {
+      vehicleSelect.innerHTML = '<option value="">Could not load vehicles</option>';
+    });
+
   document.getElementById('bookModal').classList.add('show');
 }
 function openRescheduleModal() {
@@ -768,12 +827,9 @@ if (localStorage.getItem('userLoggedIn') === 'true') {
 }
 
 // ══════════════════════════════════════════════════
-// INIT
+// INIT – load data from backend
 // ══════════════════════════════════════════════════
-renderAppointments();
-updateStats();
-renderCalendar();
-renderTimeSlots(new Date());
+loadAppointments();
 </script>
 </body>
 </html>

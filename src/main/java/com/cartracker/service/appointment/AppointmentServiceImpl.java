@@ -30,7 +30,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Optional<Appointment> findById(String id) {
-        return Optional.empty(); // TODO
+        return appointmentRepository.findById(id);
+    }
+
+    @Override
+    public List<Appointment> findAll() {
+        return appointmentRepository.findAll();
     }
 
     @Override
