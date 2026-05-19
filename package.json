@@ -1,0 +1,14 @@
+{
+  "name": "car-service-tracker",
+  "version": "1.0.0",
+  "description": "Helper npm file to run/build the Car Service and Maintenance Tracker Java app",
+  "scripts": {
+    "build": "mvn clean package -DskipTests",
+    "start": "java -jar target/car-service-tracker-all.jar",
+    "run-jar": "java -jar target/car-service-tracker-1.0-SNAPSHOT.jar",
+    "exec": "mvn exec:java -Dexec.mainClass=com.cartracker.MainApplication"
+  },
+  "devDependencies": {
+    "vite": "^8.0.13"
+  }
+}
